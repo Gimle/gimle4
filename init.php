@@ -3,8 +3,6 @@
  * The initialization script.
  *
  * Included first in any project and acts like a custom bootstrap.
- *
- * @link http://gimlé.net/documentation/v4/init/
  */
 /**#@+
  * @ignore
