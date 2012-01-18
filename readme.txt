@@ -6,7 +6,7 @@ Welcome to Gimlé Core v4
 Gimlé Core v4 is a mix of an advanced bootstrapper and a basic framework.
 It's easy extendable for any kind of project.
 
-The project focus is speed and flexability.
+The project focus is speed and flexibility.
 
 
 Features
