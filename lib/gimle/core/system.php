@@ -67,7 +67,7 @@ class System {
 					elseif ($line[1] === 'null') {
 						$value = null;
 					}
-					elseif ($line[1] === (string)(float)$line[1]) {
+					elseif (filter_var($line[1], FILTER_VALIDATE_FLOAT) !== false) {
 						$value = (float)$line[1];
 					}
 					else {
