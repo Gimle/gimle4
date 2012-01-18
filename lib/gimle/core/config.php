@@ -14,7 +14,9 @@ class Config {
 	 * @return void
 	 */
 	public static function parse () {
-		$finalize = self::_parseIniFile(CORE_DIR . 'config.ini');
+		if (!$finalize = self::_parseIniFile(CORE_DIR . 'config.ini')) {
+			$finalize = array();
+		}
 		if ($config = self::_parseIniFile(SITE_DIR . 'config.php')) {
 			$finalize = ArrayUtils::mergeRecursiveDistinct($finalize, $config);
 		}
