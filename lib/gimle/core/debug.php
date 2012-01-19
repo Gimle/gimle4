@@ -31,10 +31,10 @@ class Debug {
 			}
 			else {
 				$fix = array(
-					"\r\n" => self::color('¤¶', 'gray') . "\n", // Windows linefeed.
-					"\n\r" => self::color('¶¤', 'gray') . "\n\n", // Erronumous (might be interpeted as double) linefeed.
-					"\n"   => self::color('¶', 'gray') . "\n", // UNIX linefeed.
-					"\r"   => self::color('¤', 'gray') . "\n" // Old mac linefeed.
+					"\r\n" => call_user_func(__CLASS__ . '::color', '¤¶', 'gray') . "\n", // Windows linefeed.
+					"\n\r" => call_user_func(__CLASS__ . '::color', '¶¤', 'gray') . "\n\n", // Erronumous (might be interpeted as double) linefeed.
+					"\n"   => call_user_func(__CLASS__ . '::color', '¶', 'gray') . "\n", // UNIX linefeed.
+					"\r"   => call_user_func(__CLASS__ . '::color', '¤', 'gray') . "\n" // Old mac linefeed.
 				);
 				$value = strtr(htmlspecialchars($value), $fix);
 			}
@@ -191,7 +191,7 @@ class Debug {
 	 * @param string $color
 	 * @return string
 	 */
-	private static function color ($content, $color) {
+	public static function color ($content, $color) {
 		$template = '<span style="color: %s;">%s</span>';
 		if ($color === 'gray') {
 			return sprintf($template, 'gray', $content);
