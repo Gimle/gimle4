@@ -42,6 +42,11 @@ class Config {
 			date_default_timezone_set('CET');
 		}
 
+		if (!defined('ENV_LEVEL')) {
+			//@todo Figure out how to load env level from config file.
+			define('ENV_LEVEL', ENV_LIVE);
+		}
+
 		if (!defined('TEMP_DIR')) {
 			if (isset($config['temp'])) {
 				define('TEMP_DIR', $config['temp']);

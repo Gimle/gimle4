@@ -10,14 +10,12 @@
 
 define('TIME_START', microtime(true));
 session_start();
+
 define('CORE_DIR', __DIR__ . DIRECTORY_SEPARATOR);
-
-require CORE_DIR . 'lib' . DIRECTORY_SEPARATOR . 'functions.php';
-require CORE_DIR . 'lib' . DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, __NAMESPACE__) . DIRECTORY_SEPARATOR . 'system.php';
-
-spl_autoload_register(__NAMESPACE__ . '\System::autoload');
-
-Config::parse();
+define('ENV_DEV', 1);
+define('ENV_TEST', 2);
+define('ENV_PREPROD', 4);
+define('ENV_LIVE', 8);
 
 if (PHP_SAPI === 'cli') {
 	define('ENV_CLI', true);
@@ -27,6 +25,13 @@ else {
 	define('ENV_CLI', false);
 	define('ENV_WEB', true);
 }
+
+require CORE_DIR . 'lib' . DIRECTORY_SEPARATOR . 'functions.php';
+require CORE_DIR . 'lib' . DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, __NAMESPACE__) . DIRECTORY_SEPARATOR . 'system.php';
+
+spl_autoload_register(__NAMESPACE__ . '\System::autoload');
+
+Config::parse();
 
 if (ENV_WEB) {
 	header('Content-Type: text/html; charset=' . mb_internal_encoding());
