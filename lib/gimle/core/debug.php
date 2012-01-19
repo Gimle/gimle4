@@ -62,10 +62,10 @@ class Debug {
 				echo ' = ' . call_user_func(__CLASS__ . '::color', 'String(' . strlen($var) . ')', 'gray') . ' ' . call_user_func(__CLASS__ . '::color', '\'' . $fixDumpString($var_name, $var) . '\'', 'green');
 			}
 			elseif (is_int($var)) {
-				echo ' = <span style="color: #a2a2a2;">Integer(' . strlen($var) . ')</span> ' . call_user_func(__CLASS__ . '::color', $var, 'red');
+				echo ' = ' . call_user_func(__CLASS__ . '::color', 'Integer(' . strlen($var) . ')', 'gray') . ' ' . call_user_func(__CLASS__ . '::color', $var, 'red');
 			}
 			elseif (is_bool($var)) {
-				echo ' = <span style="color: #a2a2a2;">Boolean</span> <span style="color: #92008d;">' . ($var === true ? 'true' : 'false') . '</span>';
+				echo ' = ' . call_user_func(__CLASS__ . '::color', 'Boolean', 'gray') . ' ' . call_user_func(__CLASS__ . '::color', ($var === true ? 'true' : 'false'), 'purple');
 			}
 			elseif (is_object($var)) {
 				$class = new \ReflectionObject($var);
@@ -79,11 +79,11 @@ class Debug {
 				}
 
 				if ($var instanceof Iterator) {
-					echo ' => <span style="color: #a2a2a2;">' . get_class($var) . $parents . ' object (Iterator)' . "</span>\n" . str_repeat($doDump_indent, $indent) . "(\n";
+					echo ' => ' . call_user_func(__CLASS__ . '::color', get_class($var) . $parents . ' object (Iterator)', 'gray') . "\n" . str_repeat($doDump_indent, $indent) . "(\n";
 					var_dump($var);
 				}
 				else {
-					echo ' => <span style="color: #a2a2a2;">' . get_class($var) . $parents . ' object (' . count((array) $var) . ')' . "</span>\n" . str_repeat($doDump_indent, $indent) . "(\n";
+					echo ' => ' . call_user_func(__CLASS__ . '::color', get_class($var) . $parents . ' object (' . count((array) $var) . ')' , 'gray') . "\n" . str_repeat($doDump_indent, $indent) . "(\n";
 					$reflect = new \ReflectionClass($var);
 					$constants = $reflect->getConstants();
 					if (!empty($constants)) {
@@ -122,16 +122,16 @@ class Debug {
 				echo str_repeat($doDump_indent, $indent) . ')';
 			}
 			elseif (is_null($var)) {
-				echo ' = <span style="color: black;">null</span>';
+				echo ' = ' . call_user_func(__CLASS__ . '::color', 'null', 'black');
 			}
 			elseif (is_float($var)) {
-				echo ' = <span style="color: #a2a2a2;">Float(' . strlen($var) . ')</span> <span style="color: #0099c5;">' . $var . '</span>';
+				echo ' = ' . call_user_func(__CLASS__ . '::color', 'Float(' . strlen($var) . ')', 'gray') . ' ' . call_user_func(__CLASS__ . '::color', $var, 'cyan');
 			}
 			elseif (is_resource($var)) {
-				echo ' = <span style="color: #a2a2a2;">Resource</span> ' . $var;
+				echo ' = ' . call_user_func(__CLASS__ . '::color', 'Resource', 'gray') . ' ' . $var;
 			}
 			else {
-				echo ' = <span style="color: #a2a2a2;">Unknown</span> ' . $var;
+				echo ' = ' . call_user_func(__CLASS__ . '::color', 'Unknown', 'gray') . ' ' . $var;
 			}
 			echo "\n";
 		};
@@ -204,6 +204,12 @@ class Debug {
 		}
 		if ($color === 'lightgray') {
 			return sprintf($template, 'lightgray', $content);
+		}
+		if ($color === 'purple') {
+			return sprintf($template, 'purple', $content);
+		}
+		if ($color === 'cyan') {
+			return sprintf($template, 'dodgerblue', $content);
 		}
 		if ($color === 'orange') {
 			return sprintf($template, 'darkorange', $content);
