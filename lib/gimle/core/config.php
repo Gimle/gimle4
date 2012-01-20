@@ -47,6 +47,13 @@ class Config {
 			define('ENV_LEVEL', ENV_LIVE);
 		}
 
+		if ((isset($config['admin']['ips'])) && (isset($_SERVER['REMOTE_ADDR'])) && (System::ipInRanges($_SERVER['REMOTE_ADDR'], $config['admin']['ips']))) {
+			define('FROM_ADMIN_IP', true);
+		}
+		else {
+			define('FROM_ADMIN_IP', false);
+		}
+
 		if (!defined('TEMP_DIR')) {
 			if (isset($config['temp'])) {
 				define('TEMP_DIR', $config['temp']);
