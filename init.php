@@ -36,11 +36,6 @@ Config::parse();
 if (ENV_WEB) {
 	header('Content-Type: text/html; charset=' . mb_internal_encoding());
 	header('Last-Modified: ' . date('r', TIME_START));
-
-	if (isset($_SESSION['gimlePostLoader'])) {
-		$_POST = $_SESSION['gimlePostLoader'];
-		unset($_SESSION['gimlePostLoader']);
-	}
 }
 
 if ((isset(Options::$config['extensions'])) && (!empty(Options::$config['extensions']))) {
@@ -55,7 +50,7 @@ if (file_exists(SITE_DIR . 'init.php')) {
 	include SITE_DIR . 'init.php';
 }
 
-if ((ENV_WEB) && (Server::page(0)) && (in_array(Server::page(0), array('load', 'css', 'js', 'favicon.ico')))) {
+if ((ENV_WEB) && (Server::page(0)) && (in_array(Server::page(0), array('css', 'js', 'favicon.ico')))) {
 	include CORE_DIR . 'lib' . DIRECTORY_SEPARATOR . 'specialurls.php';
 	exit();
 }

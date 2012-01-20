@@ -7,15 +7,7 @@
 /**#@+
  * @ignore
  */
-if (Server::page(0) === 'load') {
-	if ((isset($_POST['goto'])) && (strpbrk($_POST['goto'], "\n\r") === false) && (substr($_POST['goto'], 0, mb_strlen(BASE_PATH)) === BASE_PATH)) {
-		$_SESSION['gimlePostLoader'] = $_POST;
-		unset($_SESSION['gimlePostLoader']['goto']);
-		header('Location: ' . $_POST['goto']);
-	}
-	exit();
-}
-elseif (Server::page(0) === 'favicon.ico') {
+if (Server::page(0) === 'favicon.ico') {
 	$file = CORE_DIR . 'favicon.ico';
 	header_remove('Expires');
 	header_remove('Pragma');
