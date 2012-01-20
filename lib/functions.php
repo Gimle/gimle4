@@ -150,3 +150,158 @@ if (!function_exists('array_value')) {
 		return false;
 	}
 }
+
+if (!function_exists('generate_password')) {
+	/**
+	 * Generate a human readable random password string.
+	 *
+	 * @param int $length Number of characters.
+	 * @return string
+	 */
+	function generate_password ($length = 8) {
+		$var = 'abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+		$len = strlen($var);
+		$return = '';
+		for ($i = 0; $i < $length; $i++) {
+			$return .= $var[rand(0, $len - 1)];
+		}
+		return $return;
+	}
+}
+
+if (!function_exists('string_to_bytes')) {
+	/**
+	 * Converts a config file formatted filesize string to bytes.
+	 *
+	 * @param string $size
+	 * @return int Number of bytes.
+	 */
+	function string_to_bytes ($size) {
+		$size = trim($size);
+		$last = strtolower(substr($size, -1));
+		$size = (int)$size;
+		switch ($last) {
+			case 'g':
+				$size *= 1024;
+			case 'm':
+				$size *= 1024;
+			case 'k':
+				$size *= 1024;
+		}
+		return $size;
+	}
+}
+
+if (!function_exists('get_upload_limit')) {
+	/**
+	 * Checks for the maximum size uploads.
+	 *
+	 * @return int Maximum number of bytes.
+	 */
+	function get_upload_limit () {
+		return (int)min(string_to_bytes(ini_get('memory_limit')), string_to_bytes(ini_get('post_max_size')), string_to_bytes(ini_get('upload_max_filesize')));
+	}
+}
+
+if (!function_exists('ip_in_range')) {
+	/**
+	 * Check if the specified ip is part of a range.
+	 *
+	 * @param string $ip
+	 * @param string $range
+	 * @return boolean
+	 */
+	function ip_in_range ($ip, $range) {
+		if (strpos($range, '/') !== false) {
+			list($range, $netmask) = explode('/', $range, 2);
+			if (strpos($netmask, '.') !== false) {
+				$netmask = str_replace('*', '0', $netmask);
+				$netmaskdec = ip2long($netmask);
+				$bitip = (ip2long($ip) & $netmaskdec);
+				$bitrange = (ip2long($range) & $netmaskdec);
+				if ($bitip == $bitrange) {
+					return true;
+				}
+			}
+			else {
+				$x = explode('.', $range);
+				while (count($x) < 4) {
+					$x[] = '0';
+				}
+				list($a, $b, $c, $d) = $x;
+				$range = sprintf('%u.%u.%u.%u', (empty($a) ? '0' : $a), (empty($b) ? '0' : $b), (empty($c) ? '0' : $c), (empty($d) ? '0' : $d));
+				$rangedec = ip2long($range);
+				$ipdec = ip2long($ip);
+
+				$wildcarddec = pow(2, (32 - $netmask)) - 1;
+				$netmaskdec = ~$wildcarddec;
+				$bitip = ($ipdec & $netmaskdec);
+				$bitrange = ($rangedec & $netmaskdec);
+				if ($bitip == $bitrange) {
+					return true;
+				}
+			}
+		}
+		else {
+			if (strpos($range, '*') !== false) {
+				$lower = str_replace('*', '0', $range);
+				$upper = str_replace('*', '255', $range);
+				$range = $lower . '-' . $upper;
+			}
+
+			if (strpos($range, '-') !== false) {
+				list($lower, $upper) = explode('-', $range, 2);
+				$lowerdec = (float) sprintf('%u', ip2long($lower));
+				$upperdec = (float) sprintf('%u', ip2long($upper));
+				$ipdec = (float) sprintf('%u', ip2long($ip));
+				if (($ipdec >= $lowerdec) && ($ipdec <= $upperdec)) {
+					return true;
+				}
+			}
+			elseif ($ip == $range) {
+				return true;
+			}
+		}
+		return false;
+	}
+}
+
+if (!function_exists('ips_in_range')) {
+	/**
+	 * Check if one of the specified ips is part of a range.
+	 *
+	 * @param array $ips
+	 * @param string $range
+	 * @return boolean
+	 */
+	function ips_in_range (array $ips, $range) {
+		if (!empty($ips)) {
+			foreach ($ips as $ip) {
+				if (ip_in_range($ip, $range)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+}
+
+if (!function_exists('ip_in_ranges')) {
+	/**
+	 * Check if the specified ip is part of any of the ranges.
+	 *
+	 * @param string $ip
+	 * @param string $ranges
+	 * @return boolean
+	 */
+	function ip_in_ranges ($ip, array $ranges) {
+		if (!empty($ranges)) {
+			foreach ($ranges as $range) {
+				if (ip_in_range($ip, $range)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+}

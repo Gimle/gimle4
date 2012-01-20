@@ -38,7 +38,7 @@ class Config {
 			define('ENV_LEVEL', ENV_LIVE);
 		}
 
-		if ((isset($config['admin']['ips'])) && (isset($_SERVER['REMOTE_ADDR'])) && (System::ipInRanges($_SERVER['REMOTE_ADDR'], $config['admin']['ips']))) {
+		if ((isset($config['admin']['ips'])) && (isset($_SERVER['REMOTE_ADDR'])) && (ip_in_ranges($_SERVER['REMOTE_ADDR'], $config['admin']['ips']))) {
 			define('FROM_ADMIN_IP', true);
 		}
 		else {
