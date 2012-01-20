@@ -70,55 +70,77 @@ class Debug {
 			elseif (is_object($var)) {
 				$class = new \ReflectionObject($var);
 				$parents = '';
-				if ($value = $class->getParentClass()) {
-					$parents .= ' extends ' . $value->name;
+				if ($parent = $class->getParentClass()) {
+					$parents .= ' extends ' . $class->getParentClass()->name;
 				}
+				unset($parent);
 				$interfaces = $class->getInterfaces();
 				if (!empty($interfaces)) {
 					$parents .= ' implements ' . implode(', ', array_keys($interfaces));
 				}
+				unset($interfaces);
 
 				if ($var instanceof Iterator) {
-					echo ' => ' . call_user_func(__CLASS__ . '::color', get_class($var) . $parents . ' object (Iterator)', 'gray') . "\n" . str_repeat($doDump_indent, $indent) . "(\n";
+					echo ' => ' . call_user_func(__CLASS__ . '::color', $class->getName() . ' Object (Iterator)' . $parents, 'gray') . "\n" . str_repeat($doDump_indent, $indent) . "(\n";
 					var_dump($var);
 				}
 				else {
-					echo ' => ' . call_user_func(__CLASS__ . '::color', get_class($var) . $parents . ' object (' . count((array) $var) . ')' , 'gray') . "\n" . str_repeat($doDump_indent, $indent) . "(\n";
+					echo ' => ' . call_user_func(__CLASS__ . '::color', $class->getName() . ' Object' . $parents , 'gray') . "\n" . str_repeat($doDump_indent, $indent) . "(\n";
+
+					$dblcheck = array();
+					foreach ((array)$var as $key => $value) {
+						if (!property_exists($var, $key)) {
+							if (substr($key, 1, strlen($class->getName())) == $class->getName()) {
+								$key = substr($key, (strlen($class->getName()) + 2));
+							}
+							else {
+								$key = substr($key, 3);
+							}
+						}
+						$dblcheck[$key] = $value;
+					}
+
 					$reflect = new \ReflectionClass($var);
+
 					$constants = $reflect->getConstants();
 					if (!empty($constants)) {
 						foreach ($constants as $key => $value) {
 							$dodump($value, $key, $indent + 1);
 						}
 					}
-					$static = $reflect->getStaticProperties();
-					if (!empty($static)) {
-						foreach ($static as $key => $value) {
-							$visability = '';
-							if (!isset($var::$$key)) {
-								$visability = 'private|protected ';
+					unset($constants);
+					$props = $reflect->getProperties();
+					if (!empty($props)) {
+						foreach ($props as $prop) {
+							$append = '';
+							if ($prop->isPrivate()) {
+								$append .= ' private';
 							}
-							$dodump($value, '[\'' . $key . '\': ' . $visability . 'static]', $indent + 1);
-						}
-					}
-					$namespace = $reflect->getNamespaceName();
-					foreach ((array) $var as $key => $value) {
-						if (!property_exists($var, $key)) {
-							if ((string) substr($key, 1, strlen(get_class($var))) == (string) get_class($var)) {
-								$key = substr($key, (strlen((string) get_class($var)) + 1));
-								$keytype = ': private';
+							elseif ($prop->isProtected()) {
+								$append .= ' protected';
+							}
+							$prop->setAccessible(true);
+							if ($prop->isStatic()) {
+								$value = $prop->getValue();
+								$append .= ' static';
 							}
 							else {
-								$key = substr($key, 2);
-								$keytype = ': protected';
+								$value = $prop->getValue($var);
 							}
+							if (array_key_exists($prop->name, $dblcheck)) {
+								unset($dblcheck[$prop->name]);
+							}
+							$dodump($value, '[\'' . $prop->name . '\'' . $append . ']', $indent + 1);
 						}
-						else {
-							$keytype = '';
+					}
+					unset($props, $reflect);
+					if (!empty($dblcheck)) {
+						foreach ($dblcheck as $key => $value) {
+							$dodump($value, '[\'' . $key . '\' magic]', $indent + 1);
 						}
-						$dodump($value, '[\'' . $key . '\'' . $keytype . ']', $indent + 1);
 					}
 				}
+				unset($class);
 				echo str_repeat($doDump_indent, $indent) . ')';
 			}
 			elseif (is_null($var)) {
