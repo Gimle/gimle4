@@ -25,7 +25,7 @@ class Debug {
 //			return;
 //		}
 
-		$fixDumpString = function ($name, $value) {
+		$fixDumpString = function ($name, $value, $htmlspecial = true) {
 			if (in_array($name, array('[\'pass\']', '[\'password\']', '[\'PHP_AUTH_PW\']'))) {
 				$value = '********';
 			}
@@ -36,19 +36,19 @@ class Debug {
 					"\n"   => call_user_func(__CLASS__ . '::color', '¶', 'gray') . "\n", // UNIX linefeed.
 					"\r"   => call_user_func(__CLASS__ . '::color', '¤', 'gray') . "\n" // Old mac linefeed.
 				);
-				$value = strtr(htmlspecialchars($value), $fix);
+				$value = strtr(($htmlspecial ? htmlspecialchars($value) : $value), $fix);
 			}
 			return $value;
 		};
 
-		$dodump = function ($var, $var_name = null, $indent = 0) use (&$dodump, &$fixDumpString) {
+		$dodump = function ($var, $var_name = null, $indent = 0, $params = array()) use (&$dodump, &$fixDumpString) {
 			if (strstr(print_r($var, true), '*RECURSION*') == true) {
 				echo call_user_func(__CLASS__ . '::color', 'Recursion detected, performing normal var_dump:', 'orange') . ' ';
 				echo $var_name . ' => ';
 				var_dump($var);
 				return;
 			}
-			$doDump_indent = call_user_func(__CLASS__ . '::color', '|', 'lightgray') . ' &nbsp;&nbsp; ';
+			$doDump_indent = call_user_func(__CLASS__ . '::color', '|', 'lightgray') . '   ';
 			echo str_repeat($doDump_indent, $indent) . htmlentities($var_name);
 
 			if (is_array($var)) {
@@ -59,7 +59,12 @@ class Debug {
 				echo str_repeat($doDump_indent, $indent) . ')';
 			}
 			elseif (is_string($var)) {
-				echo ' = ' . call_user_func(__CLASS__ . '::color', 'String(' . strlen($var) . ')', 'gray') . ' ' . call_user_func(__CLASS__ . '::color', '\'' . $fixDumpString($var_name, $var) . '\'', 'green');
+				if ((isset($params['error'])) && ($params['error'] === true)) {
+					echo ' = ' . call_user_func(__CLASS__ . '::color', 'Error: ' . $fixDumpString($var_name, $var, false), 'pink');
+				}
+				else {
+					echo ' = ' . call_user_func(__CLASS__ . '::color', 'String(' . strlen($var) . ')', 'gray') . ' ' . call_user_func(__CLASS__ . '::color', '\'' . $fixDumpString($var_name, $var) . '\'', 'green');
+				}
 			}
 			elseif (is_int($var)) {
 				echo ' = ' . call_user_func(__CLASS__ . '::color', 'Integer(' . strlen($var) . ')', 'gray') . ' ' . call_user_func(__CLASS__ . '::color', $var, 'red');
@@ -113,6 +118,7 @@ class Debug {
 					if (!empty($props)) {
 						foreach ($props as $prop) {
 							$append = '';
+							$error = false;
 							if ($prop->isPrivate()) {
 								$append .= ' private';
 							}
@@ -125,12 +131,21 @@ class Debug {
 								$append .= ' static';
 							}
 							else {
-								$value = $prop->getValue($var);
+								try {
+									set_error_handler(function ($errno, $errstr) { throw new \Exception($errstr); });
+									$value = $prop->getValue($var);
+									restore_error_handler();
+								}
+								catch (\Exception $e) {
+									$value = $e->getMessage();
+									$append .= ' error';
+									$error = true;
+								}
 							}
 							if (array_key_exists($prop->name, $dblcheck)) {
 								unset($dblcheck[$prop->name]);
 							}
-							$dodump($value, '[\'' . $prop->name . '\'' . $append . ']', $indent + 1);
+							$dodump($value, '[\'' . $prop->name . '\'' . $append . ']', $indent + 1, array('error' => $error));
 						}
 					}
 					unset($props, $reflect);
@@ -164,7 +179,7 @@ class Debug {
 		if ($return == true) {
 			ob_start();
 		}
-		echo "<!-- Dumping -->\n" . '<pre style="line-height: 120%; margin: 0px 0px 10px 0px; display: block; background: white; color: black; border: 1px solid #cccccc; padding: 5px; font-size: 10px;">';
+		echo '<pre style="line-height: 120%; margin: 0px 0px 10px 0px; display: block; background: white; color: black; border: 1px solid #cccccc; padding: 5px; font-size: 10px;">';
 
 		if ($title === false) {
 			$backtrace = debug_backtrace();
@@ -196,7 +211,7 @@ class Debug {
 			}
 		}
 		$dodump($var, $title);
-		echo "</pre>\n<!-- Dump done -->\n";
+		echo "</pre>\n";
 		if ($return == true) {
 			$out = ob_get_contents();
 			ob_end_clean();
@@ -232,6 +247,9 @@ class Debug {
 		}
 		if ($color === 'cyan') {
 			return sprintf($template, 'dodgerblue', $content);
+		}
+		if ($color === 'pink') {
+			return sprintf($template, 'deeppink', $content);
 		}
 		if ($color === 'orange') {
 			return sprintf($template, 'darkorange', $content);
