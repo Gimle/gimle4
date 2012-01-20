@@ -216,8 +216,8 @@ class System {
 
 				$wildcarddec = pow(2, (32 - $netmask)) - 1;
 				$netmaskdec = ~$wildcarddec;
-				$bitip = (ip2long($ipdec) & $netmaskdec);
-				$bitrange = (ip2long($rangedec) & $netmaskdec);
+				$bitip = ($ipdec & $netmaskdec);
+				$bitrange = ($rangedec & $netmaskdec);
 				if ($bitip == $bitrange) {
 					return true;
 				}
