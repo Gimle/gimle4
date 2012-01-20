@@ -14,25 +14,16 @@ class Config {
 	 * @return void
 	 */
 	public static function parse () {
-		if (!$finalize = self::_parseIniFile(CORE_DIR . 'config.ini')) {
-			$finalize = array();
+		if (!$config = self::parseIniFile(CORE_DIR . 'config.ini')) {
+			$config = array();
 		}
-		if ($config = self::_parseIniFile(SITE_DIR . 'config.php')) {
-			$finalize = ArrayUtils::mergeRecursiveDistinct($finalize, $config);
+		if ($file = self::parseIniFile(SITE_DIR . 'config.php')) {
+			$config = array_merge_recursive_distinct($config, $file);
 		}
-		if ($config = self::_parseIniFile(SITE_DIR . 'config.ini')) {
-			$finalize = ArrayUtils::mergeRecursiveDistinct($finalize, $config);
+		if ($file = self::parseIniFile(SITE_DIR . 'config.ini')) {
+			$config = array_merge_recursive_distinct($config, $file);
 		}
-		self::_finalize($finalize);
-	}
 
-	/**
-	 * Finalize the configuration process.
-	 *
-	 * @param array $config
-	 * @return void
-	 */
-	private static function _finalize ($config) {
 		unset($config['core']);
 		if (isset($config['timezone'])) {
 			date_default_timezone_set($config['timezone']);
@@ -156,7 +147,7 @@ class Config {
 	 * @param string $filename the full path to the file to parse.
 	 * @return array|bool array with the read configuration file, or false upon failure.
 	 */
-	private static function _parseIniFile ($filename) {
+	private static function parseIniFile ($filename) {
 		if (file_exists($filename)) {
 			if (substr($filename, -4, 4) === '.ini') {
 				$config = System::parseIniFile($filename);

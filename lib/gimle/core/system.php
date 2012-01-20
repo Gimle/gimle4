@@ -78,7 +78,7 @@ class System {
 							$return[$key] = $value;
 						}
 						else {
-							$return = ArrayUtils::mergeRecursiveDistinct($return, ArrayUtils::dotStringKeyToNested($lastkey, array($key => $value)));
+							$return = array_merge_recursive_distinct($return, string_to_nested_array($lastkey, array($key => $value)));
 						}
 					}
 				}

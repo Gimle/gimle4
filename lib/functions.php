@@ -57,3 +57,54 @@ if (!function_exists('is_binary')) {
 		return true;
 	}
 }
+
+if (!function_exists('array_merge_recursive_distinct')) {
+	/**
+	 * Merge two or more arrays recursivly and preserve keys.
+	 *
+	 * Values will overwrite previous array for every additional array passed to the method.
+	 *
+	 * @param array $array1 Initial array to merge.
+	 * @param array $… [optional] Variable list of arrays to recursively merge.
+	 * @return array The merged array.
+	 */
+	function array_merge_recursive_distinct (array $array1) {
+		$arrays = func_get_args();
+		if (count($arrays) > 1) {
+			array_shift($arrays);
+			foreach ($arrays as $array2) {
+				if (!empty($array2)) {
+					foreach ($array2 as $key => $val) {
+						if (is_array($array2[$key])) {
+							$array1[$key] = ((isset($array1[$key])) && (is_array($array1[$key])) ? array_merge_recursive_distinct($array1[$key], $array2[$key]) : $array2[$key]);
+						}
+						else {
+							$array1[$key] = $val;
+						}
+					}
+				}
+			}
+		}
+		return $array1;
+	}
+}
+
+if (!function_exists('string_to_nested_array')) {
+	/**
+	 * Convert a separated string to a nested array.
+	 *
+	 * @param string $key
+	 * @param mixed $value
+	 * @param string $separator
+	 * @return array
+	 */
+	function string_to_nested_array ($key, $value, $separator = '.') {
+		if (strpos($key, $separator) === false) {
+			return array($key => $value);
+		}
+		$key = explode($separator, $key);
+		$pre = array_shift($key);
+		$return = array($pre => string_to_nested_array(implode($separator, $key), $value, $separator));
+		return $return;
+	}
+}
