@@ -95,11 +95,9 @@ class Debug {
 					$dblcheck = array();
 					foreach ((array)$var as $key => $value) {
 						if (!property_exists($var, $key)) {
-							if (substr($key, 1, strlen($class->getName())) == $class->getName()) {
-								$key = substr($key, (strlen($class->getName()) + 2));
-							}
-							else {
-								$key = substr($key, 3);
+							$key = ltrim($key, "\x0*");
+							if (substr($key, 0, strlen($class->getName())) == $class->getName()) {
+								$key = substr($key, (strlen($class->getName()) + 1));
 							}
 						}
 						$dblcheck[$key] = $value;
@@ -114,6 +112,7 @@ class Debug {
 						}
 					}
 					unset($constants);
+
 					$props = $reflect->getProperties();
 					if (!empty($props)) {
 						foreach ($props as $prop) {
