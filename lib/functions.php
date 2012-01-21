@@ -456,3 +456,105 @@ if (!function_exists('bytes_to_array')) {
 		return $return;
 	}
 }
+
+if (!function_exists('cut_string')) {
+	/**
+	 * Cut a string to desired length.
+	 *
+	 * @param input
+	 * @param length
+	 * @param bool cut by word, will never overflow desired length
+	 * @param cutted string ending
+	 * @return result
+	 */
+	function cut_string ($string, $limit, $byword = true, $ending = '…') {
+		if (mb_strlen($string) > $limit + 1) {
+			$string = mb_substr($string, 0, $limit - 1);
+			$string = rtrim($string);
+			if ($byword) {
+				$len = mb_strrchr($string, ' ');
+				if ($len) {
+					$len = mb_strlen($len);
+					$string = mb_substr($string, 0, -$len);
+				}
+			}
+			$string .= $ending;
+		}
+		return $string;
+	}
+}
+
+if (!function_exists('parse_config_file')) {
+	/**
+	 * Parse a ini or php config file and keep typecasting.
+	 *
+	 * For ini files, this is similar to the parse_ini_file function, but keeps typecasting and require "" around strings.
+	 * For php files this function will look for a variable called $config, and return it.
+	 *
+	 * @param string $filename the full path to the file to parse.
+	 * @return array|bool array with the read configuration file, or false upon failure.
+	 */
+	function parse_config_file ($filename) {
+		if (!file_exists($filename)) {
+			return false;
+		}
+		if (substr($filename, -4, 4) === '.ini') {
+			$return = array();
+			$lines = file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+			if ($lines === false) {
+				return false;
+			}
+			if (!empty($lines)) {
+				foreach ($lines as $linenum => $linestr) {
+					if (substr($linestr, 0, 1) === ';') {
+						continue;
+					}
+					$line = explode(' = ', $linestr);
+					$key = trim($line[0]);
+					if ((isset($line[1])) && (substr($key, 0, 1) !== '[')) {
+						if ((substr($line[1], 0, 1) === '"') && (substr($line[1], -1, 1) === '"')) {
+							$value = str_replace(array('\\"', '\\\\'), array('"', '\\'), substr($line[1], 1, -1));
+						}
+						elseif (ctype_digit($line[1])) {
+							$value = (int)$line[1];
+						}
+						elseif ($line[1] === 'true') {
+							$value = true;
+						}
+						elseif ($line[1] === 'false') {
+							$value = false;
+						}
+						elseif ($line[1] === 'null') {
+							$value = null;
+						}
+						elseif (filter_var($line[1], FILTER_VALIDATE_FLOAT) !== false) {
+							$value = (float)$line[1];
+						}
+						else {
+							trigger_error('Unknown value in ini file on line ' . ($linenum + 1) . ': ' . $linestr, E_USER_WARNING);
+						}
+						if (isset($value)) {
+							if (!isset($lastkey)) {
+								$return[$key] = $value;
+							}
+							else {
+								$return = array_merge_recursive_distinct($return, string_to_nested_array($lastkey, array($key => $value)));
+							}
+						}
+					}
+					else {
+						$lastkey = substr($key, 1, -1);
+					}
+				}
+			}
+			return $return;
+		}
+		elseif (substr($filename, -4, 4) === '.php') {
+			require $filename;
+			if ((isset($config)) && (is_array($config))) {
+				return $config;
+			}
+		}
+		return false;
+	}
+}

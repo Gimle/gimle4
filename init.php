@@ -31,7 +31,7 @@ require CORE_DIR . 'lib' . DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEP
 
 spl_autoload_register(__NAMESPACE__ . '\System::autoload');
 
-Config::parse();
+require CORE_DIR . 'parseconfig.php';
 
 if (ENV_WEB) {
 	header('Content-Type: text/html; charset=' . mb_internal_encoding());
@@ -51,7 +51,7 @@ if (file_exists(SITE_DIR . 'init.php')) {
 }
 
 if ((ENV_WEB) && (Server::page(0)) && (in_array(Server::page(0), array('css', 'js', 'favicon.ico')))) {
-	include CORE_DIR . 'lib' . DIRECTORY_SEPARATOR . 'specialurls.php';
+	include CORE_DIR . 'specialurls.php';
 	exit();
 }
 

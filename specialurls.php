@@ -1,4 +1,4 @@
-<?php namespace gimle\core;
+<?php
 /**
  * This file handles loading of special URL's
  *
