@@ -91,40 +91,6 @@ class System {
 	}
 
 	/**
-	 * Get the time since the script was started.
-	 *
-	 * @return string Human readable time string.
-	 */
-	public static function runTime () {
-		$microtime = microtime(true) - TIME_START;
-		$ttr = gCon::time((int)$microtime);
-		$microtime = str_replace(',', '.', $microtime);
-		$time = '';
-		if ($ttr['years'] != 0) {
-			$time .= $ttr['years'] . ' year' . (($ttr['years'] > 1) ? 's' : '') . ' ';
-			$decimals = 0;
-		}
-		if ($ttr['days'] != 0) {
-			$time .= $ttr['days'] . ' day' . (($ttr['days'] > 1) ? 's' : '') . ' ';
-			$decimals = 0;
-		}
-		if ($ttr['hours'] != 0) {
-			$time .= $ttr['hours'] . ' hour' . (($ttr['hours'] > 1) ? 's' : '') . ' ';
-			$decimals = 0;
-		}
-		if ($ttr['minutes'] != 0) {
-			$time .= $ttr['minutes'] . ' minute' . (($ttr['minutes'] > 1) ? 's' : '') . ' ';
-			$decimals = 2;
-		}
-		if (!isset($decimals)) {
-			$decimals = 6;
-		}
-		$time .= $ttr['seconds'];
-		$time .= (($decimals > 0) ? ',' . substr($microtime, strpos($microtime, '.') + 1, $decimals) : '') . ' second' . (($ttr['seconds'] != 1) ? 's' : '');
-		return $time;
-	}
-
-	/**
 	 * Execute an external program.
 	 *
 	 * @param string $exec Command

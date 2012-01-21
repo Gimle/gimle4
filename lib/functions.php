@@ -305,3 +305,154 @@ if (!function_exists('ip_in_ranges')) {
 		return false;
 	}
 }
+
+if (!function_exists('gcd')) {
+	/**
+	 * Calculates the greatest common divisor of $a and $b
+	 *
+	 * @param int $a Non-zero integer.
+	 * @param int $b Non-zero integer.
+	 * @return int
+	 */
+	function gcd ($a, $b) {
+    	$b = ($a == 0) ? 0 : $b;
+    	return (($a % $b) ? self::gcd($b, abs($a - $b)) : $b);
+	}
+}
+
+if (!function_exists('seconds_to_array')) {
+	/**
+	 * Convert seconds to grouped array.
+	 *
+	 * @param int $time Number of seconds.
+	 * @param bool $weeks Telling if weeks should be included. (Default is false)
+	 * @return array
+	 */
+	function seconds_to_array ($time, $weeks = false) {
+		$time = str_replace(',', '.', $time);
+		$value['years'] = 0;
+		if ($weeks === true) {
+			$value['weeks'] = 0;
+		}
+		$value = array_merge($value, array('days' => 0, 'hours' => 0, 'minutes' => 0, 'seconds' => 0));
+		if ($time >= 31556926) {
+			$value['years'] = (int)floor($time / 31556926);
+			$time = ($time % 31556926);
+		}
+		if (($time >= 604800) && ($weeks === true)) {
+			$value['weeks'] = (int)floor($time / 604800);
+			$time = ($time % 604800);
+		}
+		if ($time >= 86400) {
+			$value['days'] = (int)floor($time / 86400);
+			$time = ($time % 86400);
+		}
+		if ($time >= 3600) {
+			$value['hours'] = (int)floor($time / 3600);
+			$time = ($time % 3600);
+		}
+		if ($time >= 60) {
+			$value['minutes'] = (int)floor($time / 60);
+			$time = ($time % 60);
+		}
+		$value['seconds'] = (int)floor($time);
+		return $value;
+	}
+}
+
+if (!function_exists('run_time')) {
+	/**
+	 * Get the time since the script was started.
+	 *
+	 * @return string Human readable time string.
+	 */
+	function run_time () {
+		$microtime = microtime(true) - TIME_START;
+		$ttr = seconds_to_array($microtime);
+		$microtime = str_replace(',', '.', $microtime);
+		$time = '';
+		if ($ttr['years'] != 0) {
+			$time .= $ttr['years'] . ' year' . (($ttr['years'] > 1) ? 's' : '') . ' ';
+			$decimals = 0;
+		}
+		if ($ttr['days'] != 0) {
+			$time .= $ttr['days'] . ' day' . (($ttr['days'] > 1) ? 's' : '') . ' ';
+			$decimals = 0;
+		}
+		if ($ttr['hours'] != 0) {
+			$time .= $ttr['hours'] . ' hour' . (($ttr['hours'] > 1) ? 's' : '') . ' ';
+			$decimals = 0;
+		}
+		if ($ttr['minutes'] != 0) {
+			$time .= $ttr['minutes'] . ' minute' . (($ttr['minutes'] > 1) ? 's' : '') . ' ';
+			$decimals = 2;
+		}
+		if (!isset($decimals)) {
+			$decimals = 6;
+		}
+		$time .= $ttr['seconds'];
+		$time .= (($decimals > 0) ? ',' . substr($microtime, strpos($microtime, '.') + 1, $decimals) : '') . ' second' . (($ttr['seconds'] != 1) ? 's' : '');
+		return $time;
+	}
+}
+
+if (!function_exists('number_to_roman')) {
+	/**
+	 * Convert integer to roman number.
+	 *
+	 * @param int $num Number.
+	 * @return string Roman number.
+	 */
+	function number_to_roman ($num) {
+		$numbers = array(
+			'M'  => 1000,
+			'CM' => 900,
+			'D'  => 500,
+			'CD' => 400,
+			'C'  => 100,
+			'XC' => 90,
+			'L'  => 50,
+			'XL' => 40,
+			'X'  => 10,
+			'IX' => 9,
+			'V'  => 5,
+			'IV' => 4,
+			'I' => 1
+		);
+
+		$return = '';
+		foreach ($numbers as $key => $value) {
+			$matches = (int)$num / $value;
+			$return .= str_repeat($key, $matches);
+			$num = $num % $value;
+		}
+		return $return;
+	}
+}
+
+if (!function_exists('bytes_to_array')) {
+	/**
+	 * Convert bytes to readable number.
+	 *
+	 * @param int $filesize Number of bytes.
+	 * @param int $decimals optional Number of decimals to include in string.
+	 * @return array containing prefix, float value and readable string.
+	 */
+	function bytes_to_array ($filesize = 0, $decimals = 2) {
+		$return = array();
+		$count = 0;
+		$units = array('', 'k', 'M', 'T', 'P', 'E', 'Z', 'Y');
+		while ((($filesize / 1024) >= 1) && ($count < (count($units) - 1))) {
+			$filesize = $filesize / 1024;
+			$count++;
+		}
+		if (round($filesize, $decimals) === (float)1024) {
+			$filesize = $filesize / 1024;
+			$count++;
+		}
+		$return['units']  = $units[$count];
+		$return['value']  = (float)$filesize;
+		$return['string'] = round($filesize, $decimals) . (($count > 0) ? ' ' . $units[$count] : '');
+		return $return;
+	}
+}
