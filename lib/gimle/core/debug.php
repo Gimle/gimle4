@@ -130,16 +130,16 @@ class Debug {
 								$append .= ' static';
 							}
 							else {
+								set_error_handler(function ($errno, $errstr) { throw new \Exception($errstr); });
 								try {
-									set_error_handler(function ($errno, $errstr) { throw new \Exception($errstr); });
 									$value = $prop->getValue($var);
-									restore_error_handler();
 								}
 								catch (\Exception $e) {
 									$value = $e->getMessage();
 									$append .= ' error';
 									$error = true;
 								}
+								restore_error_handler();
 							}
 							if (array_key_exists($prop->name, $dblcheck)) {
 								unset($dblcheck[$prop->name]);
