@@ -50,10 +50,6 @@ if (file_exists(SITE_DIR . 'init.php')) {
 	include SITE_DIR . 'init.php';
 }
 
-if ((ENV_WEB) && (Server::page(0)) && (in_array(Server::page(0), array('css', 'js', 'favicon.ico')))) {
+if ((ENV_WEB) && (page(0)) && (in_array(page(0), array('favicon.ico')))) {
 	include CORE_DIR . 'specialurls.php';
-	exit();
 }
-
-//@todo: Only start ob if what?
-ob_start();

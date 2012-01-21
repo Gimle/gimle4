@@ -7,7 +7,7 @@
 /**#@+
  * @ignore
  */
-if (Server::page(0) === 'favicon.ico') {
+if (page(0) === 'favicon.ico') {
 	$file = CORE_DIR . 'favicon.ico';
 	header_remove('Expires');
 	header_remove('Pragma');

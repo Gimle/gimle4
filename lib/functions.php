@@ -558,3 +558,19 @@ if (!function_exists('parse_config_file')) {
 		return false;
 	}
 }
+
+if (!function_exists('page')) {
+	function page ($part = false) {
+		$path = array();
+		if ((isset($_SERVER['PATH_INFO'])) && (trim($_SERVER['PATH_INFO'], '/') != '')) {
+			$path = explode('/', trim($_SERVER['PATH_INFO'], '/'));
+		}
+		if ($part !== false) {
+			if (isset($path[$part])) {
+				return $path[$part];
+			}
+			return false;
+		}
+		return $path;
+	}
+}

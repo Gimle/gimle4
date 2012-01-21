@@ -121,6 +121,11 @@ if (isset($config['extensions'])) {
 
 Options::$config = $config;
 
-Server::initialize();
+if (!defined('THIS_PATH')) {
+	$page = page();
+	$page = implode('/', $page) . (!empty($page) ? '/' : '');
+	define('THIS_PATH', BASE_PATH . $page);
+	define('THIS_PATH_LIVE', BASE_PATH_LIVE . $page);
+}
 
 mb_internal_encoding('utf-8');
