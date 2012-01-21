@@ -38,8 +38,8 @@ if (ENV_WEB) {
 	header('Last-Modified: ' . date('r', TIME_START));
 }
 
-if ((isset(Options::$config['extensions'])) && (!empty(Options::$config['extensions']))) {
-	foreach (Options::$config['extensions'] as $value) {
+if ((isset(System::$config['extensions'])) && (!empty(System::$config['extensions']))) {
+	foreach (System::$config['extensions'] as $value) {
 		if (file_exists($value . 'init.php')) {
 			include $value . 'init.php';
 		}

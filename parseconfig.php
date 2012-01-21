@@ -119,7 +119,7 @@ if (isset($config['extensions'])) {
 	}
 }
 
-Options::$config = $config;
+System::$config = $config;
 
 if (!defined('THIS_PATH')) {
 	$page = page();
