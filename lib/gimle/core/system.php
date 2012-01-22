@@ -15,14 +15,25 @@ class System {
 	 */
 	public static $autoloadPrependPaths = array(SITE_DIR, CORE_DIR);
 
-	private static $_sqlconnections = array();
-
+	/**
+	 * Array containing values from the config files.
+	 *
+	 * @var array
+	 */
 	public static $config = array();
+
+	/**
+	 * Array holding the initialized mysql connections.
+	 *
+	 * @var array
+	 */
+	private static $_sqlconnections = array();
 
 	/**
 	 * Autoload.
 	 *
 	 * @param string $name
+	 * @return void
 	 */
 	public static function autoload ($name) {
 		foreach (static::$autoloadPrependPaths as $autoloadPrependPath) {
@@ -51,17 +62,49 @@ class System {
 	}
 
 	/**
-	 * Execute an external program.
+	 * Colorize a string according to the envoriment settings.
 	 *
-	 * @param string $exec Command
-	 * @return array
+	 * @todo Check enviroment settings.
+	 *
+	 * @param string $content
+	 * @param string $color
+	 * @param string $background
+	 * @return string
 	 */
-	public static function run ($exec) {
-		$filename = tempnam(TEMP_DIR, 'tmp_');
-		touch($filename);
-		exec($exec . ' 2> ' . $filename, $stout, $return);
-		$sterr = explode("\n", trim(file_get_contents($filename)));
-		unlink($filename);
-		return array('command' => $exec, 'stout' => $stout, 'sterr' => $sterr, 'return' => $return);
+	public static function colorize ($content, $color, $background) {
+		$template = '<span style="color: %s;">%s</span>';
+		if ($color === 'gray') {
+			return sprintf($template, 'gray', $content);
+		}
+		elseif ($color === 'string') {
+			return sprintf($template, 'green', $content);
+		}
+		elseif ($color === 'int') {
+			return sprintf($template, 'red', $content);
+		}
+		elseif ($color === 'lightgray') {
+			if ($background === 'black') {
+				return sprintf($template, 'darkgray', $content);
+			}
+			return sprintf($template, 'lightgray', $content);
+		}
+		elseif ($color === 'bool') {
+			return sprintf($template, 'purple', $content);
+		}
+		elseif ($color === 'float') {
+			return sprintf($template, 'dodgerblue', $content);
+		}
+		elseif ($color === 'error') {
+			return sprintf($template, 'deeppink', $content);
+		}
+		elseif ($color === 'recursion') {
+			return sprintf($template, 'darkorange', $content);
+		}
+		elseif ($background === 'black') {
+			return sprintf($template, 'white', $content);
+		}
+		else {
+			return $content;
+		}
 	}
 }

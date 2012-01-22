@@ -566,6 +566,12 @@ if (!function_exists('parse_config_file')) {
 }
 
 if (!function_exists('page')) {
+	/**
+	 * Retrieve the current page from the url.
+	 *
+	 * @param int $part Optional
+	 * @return array|string
+	 */
 	function page ($part = false) {
 		$path = array();
 		if ((isset($_SERVER['PATH_INFO'])) && (trim($_SERVER['PATH_INFO'], '/') != '')) {
@@ -578,5 +584,22 @@ if (!function_exists('page')) {
 			return false;
 		}
 		return $path;
+	}
+}
+
+if (!function_exists('run')) {
+	/**
+	 * Execute an external program.
+	 *
+	 * @param string $exec Command
+	 * @return array
+	 */
+	function run ($exec) {
+		$filename = tempnam(TEMP_DIR, 'tmp_');
+		touch($filename);
+		exec($exec . ' 2> ' . $filename, $stout, $return);
+		$sterr = explode("\n", trim(file_get_contents($filename)));
+		unlink($filename);
+		return array('command' => $exec, 'stout' => $stout, 'sterr' => $sterr, 'return' => $return);
 	}
 }

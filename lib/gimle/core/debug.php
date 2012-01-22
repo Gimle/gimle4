@@ -24,53 +24,55 @@ class Debug {
 //		if (Options::enable('dump') !== true) {
 //			return;
 //		}
+		$colorfunction = __NAMESPACE__ . '\System::colorize';
+		$background = 'black';
 
-		$fixDumpString = function ($name, $value, $htmlspecial = true) {
+		$fixDumpString = function ($name, $value, $htmlspecial = true) use (&$colorfunction, &$background) {
 			if (in_array($name, array('[\'pass\']', '[\'password\']', '[\'PHP_AUTH_PW\']'))) {
 				$value = '********';
 			}
 			else {
 				$fix = array(
-					"\r\n" => call_user_func(__CLASS__ . '::color', '¤¶', 'gray') . "\n", // Windows linefeed.
-					"\n\r" => call_user_func(__CLASS__ . '::color', '¶¤', 'gray') . "\n\n", // Erronumous (might be interpeted as double) linefeed.
-					"\n"   => call_user_func(__CLASS__ . '::color', '¶', 'gray') . "\n", // UNIX linefeed.
-					"\r"   => call_user_func(__CLASS__ . '::color', '¤', 'gray') . "\n" // Old mac linefeed.
+					"\r\n" => call_user_func($colorfunction, '¤¶', 'gray', $background) . "\n", // Windows linefeed.
+					"\n\r" => call_user_func($colorfunction, '¶¤', 'gray', $background) . "\n\n", // Erronumous (might be interpeted as double) linefeed.
+					"\n"   => call_user_func($colorfunction, '¶', 'gray', $background) . "\n", // UNIX linefeed.
+					"\r"   => call_user_func($colorfunction, '¤', 'gray', $background) . "\n" // Old mac linefeed.
 				);
 				$value = strtr(($htmlspecial ? htmlspecialchars($value) : $value), $fix);
 			}
 			return $value;
 		};
 
-		$dodump = function ($var, $var_name = null, $indent = 0, $params = array()) use (&$dodump, &$fixDumpString) {
+		$dodump = function ($var, $var_name = null, $indent = 0, $params = array()) use (&$dodump, &$fixDumpString, &$colorfunction, &$background) {
 			if (strstr(print_r($var, true), '*RECURSION*') == true) {
-				echo call_user_func(__CLASS__ . '::color', 'Recursion detected, performing normal var_dump:', 'orange') . ' ';
-				echo $var_name . ' => ';
+				echo call_user_func($colorfunction, 'Recursion detected, performing normal var_dump:', 'recursion', $background) . ' ';
+				echo call_user_func($colorfunction, $var_name, 'varname', $background) . ' ' . call_user_func($colorfunction, '=>', 'black', $background) . ' ';
 				var_dump($var);
 				return;
 			}
-			$doDump_indent = call_user_func(__CLASS__ . '::color', '|', 'lightgray') . '   ';
-			echo str_repeat($doDump_indent, $indent) . htmlentities($var_name);
+			$doDump_indent = call_user_func($colorfunction, '|', 'lightgray', $background) . '   ';
+			echo str_repeat($doDump_indent, $indent) . call_user_func($colorfunction, htmlentities($var_name), 'varname', $background);
 
 			if (is_array($var)) {
-				echo ' => ' . call_user_func(__CLASS__ . '::color', 'Array (' . count($var) . ')', 'gray') . "\n" . str_repeat($doDump_indent, $indent) . "(\n";
+				echo ' ' . call_user_func($colorfunction, '=>', 'black', $background) . ' ' . call_user_func($colorfunction, 'Array (' . count($var) . ')', 'gray', $background) . "\n" . str_repeat($doDump_indent, $indent) . call_user_func($colorfunction, '(', 'lightgray', $background) . "\n";
 				foreach ($var as $key => $value) {
 					$dodump($value, '[\'' . $key . '\']', $indent + 1);
 				}
-				echo str_repeat($doDump_indent, $indent) . ')';
+				echo str_repeat($doDump_indent, $indent) . call_user_func($colorfunction, ')', 'lightgray', $background);
 			}
 			elseif (is_string($var)) {
 				if ((isset($params['error'])) && ($params['error'] === true)) {
-					echo ' = ' . call_user_func(__CLASS__ . '::color', 'Error: ' . $fixDumpString($var_name, $var, false), 'pink');
+					echo ' ' . call_user_func($colorfunction, '=', 'black', $background) . ' ' . call_user_func($colorfunction, 'Error: ' . $fixDumpString($var_name, $var, false), 'error', $background);
 				}
 				else {
-					echo ' = ' . call_user_func(__CLASS__ . '::color', 'String(' . strlen($var) . ')', 'gray') . ' ' . call_user_func(__CLASS__ . '::color', '\'' . $fixDumpString($var_name, $var) . '\'', 'green');
+					echo ' ' . call_user_func($colorfunction, '=', 'black', $background) . ' ' . call_user_func($colorfunction, 'String(' . strlen($var) . ')', 'gray', $background) . ' ' . call_user_func($colorfunction, '\'' . $fixDumpString($var_name, $var) . '\'', 'string', $background);
 				}
 			}
 			elseif (is_int($var)) {
-				echo ' = ' . call_user_func(__CLASS__ . '::color', 'Integer(' . strlen($var) . ')', 'gray') . ' ' . call_user_func(__CLASS__ . '::color', $var, 'red');
+				echo ' ' . call_user_func($colorfunction, '=', 'black', $background) . ' ' . call_user_func($colorfunction, 'Integer(' . strlen($var) . ')', 'gray', $background) . ' ' . call_user_func($colorfunction, $var, 'int', $background);
 			}
 			elseif (is_bool($var)) {
-				echo ' = ' . call_user_func(__CLASS__ . '::color', 'Boolean', 'gray') . ' ' . call_user_func(__CLASS__ . '::color', ($var === true ? 'true' : 'false'), 'purple');
+				echo ' ' . call_user_func($colorfunction, '=', 'black', $background) . ' ' . call_user_func($colorfunction, 'Boolean', 'gray', $background) . ' ' . call_user_func($colorfunction, ($var === true ? 'true' : 'false'), 'bool', $background);
 			}
 			elseif (is_object($var)) {
 				$class = new \ReflectionObject($var);
@@ -86,11 +88,11 @@ class Debug {
 				unset($interfaces);
 
 				if ($var instanceof Iterator) {
-					echo ' => ' . call_user_func(__CLASS__ . '::color', $class->getName() . ' Object (Iterator)' . $parents, 'gray') . "\n" . str_repeat($doDump_indent, $indent) . "(\n";
+					echo ' ' . call_user_func($colorfunction, '=>', 'black', $background) . ' ' . call_user_func($colorfunction, $class->getName() . ' Object (Iterator)' . $parents, 'gray', $background) . "\n" . str_repeat($doDump_indent, $indent) . call_user_func($colorfunction, '(', 'lightgray', $background) . "\n";
 					var_dump($var);
 				}
 				else {
-					echo ' => ' . call_user_func(__CLASS__ . '::color', $class->getName() . ' Object' . $parents , 'gray') . "\n" . str_repeat($doDump_indent, $indent) . "(\n";
+					echo ' ' . call_user_func($colorfunction, '=>', 'black', $background) . ' ' . call_user_func($colorfunction, $class->getName() . ' Object' . $parents , 'gray', $background) . "\n" . str_repeat($doDump_indent, $indent) . call_user_func($colorfunction, '(', 'lightgray', $background) . "\n";
 
 					$dblcheck = array();
 					foreach ((array)$var as $key => $value) {
@@ -155,19 +157,19 @@ class Debug {
 					}
 				}
 				unset($class);
-				echo str_repeat($doDump_indent, $indent) . ')';
+				echo str_repeat($doDump_indent, $indent) . call_user_func($colorfunction, ')', 'lightgray', $background);
 			}
 			elseif (is_null($var)) {
-				echo ' = ' . call_user_func(__CLASS__ . '::color', 'null', 'black');
+				echo ' ' . call_user_func($colorfunction, '=', 'black', $background) . ' ' . call_user_func($colorfunction, 'null', 'black', $background);
 			}
 			elseif (is_float($var)) {
-				echo ' = ' . call_user_func(__CLASS__ . '::color', 'Float(' . strlen($var) . ')', 'gray') . ' ' . call_user_func(__CLASS__ . '::color', $var, 'cyan');
+				echo ' ' . call_user_func($colorfunction, '=', 'black', $background) . ' ' . call_user_func($colorfunction, 'Float(' . strlen($var) . ')', 'gray', $background) . ' ' . call_user_func($colorfunction, $var, 'float', $background);
 			}
 			elseif (is_resource($var)) {
-				echo ' = ' . call_user_func(__CLASS__ . '::color', 'Resource', 'gray') . ' ' . $var;
+				echo ' ' . call_user_func($colorfunction, '=', 'black', $background) . ' ' . call_user_func($colorfunction, 'Resource', 'gray', $background) . ' ' . $var;
 			}
 			else {
-				echo ' = ' . call_user_func(__CLASS__ . '::color', 'Unknown', 'gray') . ' ' . $var;
+				echo ' ' . call_user_func($colorfunction, '=', 'black', $background) . ' ' . call_user_func($colorfunction, 'Unknown', 'gray', $background) . ' ' . $var;
 			}
 			echo "\n";
 		};
@@ -178,7 +180,7 @@ class Debug {
 		if ($return == true) {
 			ob_start();
 		}
-		echo '<pre style="line-height: 120%; margin: 0px 0px 10px 0px; display: block; background: white; color: black; border: 1px solid #cccccc; padding: 5px; font-size: 10px;">';
+		echo '<pre style="line-height: 120%; margin: 0px 0px 10px 0px; display: block; background: black; color: black; border: 1px solid #cccccc; padding: 5px; font-size: 10px;">';
 
 		if ($title === false) {
 			$backtrace = debug_backtrace();
@@ -215,46 +217,6 @@ class Debug {
 			$out = ob_get_contents();
 			ob_end_clean();
 			return $out;
-		}
-	}
-
-	/**
-	 * Colorize a string according to the envoriment settings.
-	 *
-	 * @todo Check enviroment settings.
-	 *
-	 * @param string $content
-	 * @param string $color
-	 * @return string
-	 */
-	public static function color ($content, $color) {
-		$template = '<span style="color: %s;">%s</span>';
-		if ($color === 'gray') {
-			return sprintf($template, 'gray', $content);
-		}
-		if ($color === 'green') {
-			return sprintf($template, 'green', $content);
-		}
-		if ($color === 'red') {
-			return sprintf($template, 'red', $content);
-		}
-		if ($color === 'lightgray') {
-			return sprintf($template, 'lightgray', $content);
-		}
-		if ($color === 'purple') {
-			return sprintf($template, 'purple', $content);
-		}
-		if ($color === 'cyan') {
-			return sprintf($template, 'dodgerblue', $content);
-		}
-		if ($color === 'pink') {
-			return sprintf($template, 'deeppink', $content);
-		}
-		if ($color === 'orange') {
-			return sprintf($template, 'darkorange', $content);
-		}
-		else {
-			return $content;
 		}
 	}
 }
