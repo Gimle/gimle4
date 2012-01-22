@@ -30,6 +30,35 @@ else {
 	define('FROM_ADMIN_IP', false);
 }
 
+if (ENV_CLI) {
+	ini_set('html_errors', false);
+}
+if ((isset($config['server']['override'])) && (is_array($config['server']['override'])) && (!empty($config['server']['override']))) {
+	if ((ENV_WEB) && (isset($config['server']['override']['html_errors'])) && (is_bool($config['server']['override']['html_errors']))) {
+		ini_set('html_errors', $config['server']['override']['html_errors']);
+	}
+	if ((isset($config['server']['override']['error_reporting'])) && (ctype_digit($config['server']['override']['error_reporting']))) {
+		error_reporting($config['server']['override']['error_reporting']);
+	}
+	if ((isset($config['server']['override']['max_execution_time'])) && (ctype_digit($config['server']['override']['max_execution_time']))) {
+		ini_set('max_execution_time', $config['server']['override']['max_execution_time']);
+	}
+	if ((isset($config['server']['override']['memory_limit'])) && (ctype_digit($config['server']['override']['memory_limit']))) {
+		ini_set('memory_limit', $config['server']['override']['memory_limit']);
+	}
+	if (ENV_CLI) {
+		if ((isset($config['server']['override']['error_reporting_cli'])) && (ctype_digit($config['server']['override']['error_reporting_cli']))) {
+			error_reporting($config['server']['override']['error_reporting_cli']);
+		}
+		if ((isset($config['server']['override']['max_execution_time_cli'])) && (ctype_digit($config['server']['override']['max_execution_time_cli']))) {
+			ini_set('max_execution_time', $config['server']['override']['max_execution_time_cli']);
+		}
+		if ((isset($config['server']['override']['memory_limit_cli'])) && (ctype_digit($config['server']['override']['memory_limit_cli']))) {
+			ini_set('memory_limit', $config['server']['override']['memory_limit_cli']);
+		}
+	}
+}
+
 if (!defined('TEMP_DIR')) {
 	if (isset($config['temp'])) {
 		define('TEMP_DIR', $config['temp']);
@@ -120,6 +149,7 @@ if (isset($config['extensions'])) {
 }
 
 System::$config = $config;
+unset($config);
 
 if (!defined('THIS_PATH')) {
 	$page = page();
