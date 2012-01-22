@@ -512,6 +512,9 @@ if (!function_exists('parse_config_file')) {
 					$line = explode(' = ', $linestr);
 					$key = trim($line[0]);
 					if ((isset($line[1])) && (substr($key, 0, 1) !== '[')) {
+						if (isset($value)) {
+							unset($value);
+						}
 						if ((substr($line[1], 0, 1) === '"') && (substr($line[1], -1, 1) === '"')) {
 							$value = str_replace(array('\\"', '\\\\'), array('"', '\\'), substr($line[1], 1, -1));
 						}
@@ -529,6 +532,9 @@ if (!function_exists('parse_config_file')) {
 						}
 						elseif (filter_var($line[1], FILTER_VALIDATE_FLOAT) !== false) {
 							$value = (float)$line[1];
+						}
+						elseif (defined($line[1])) {
+							$value = constant($line[1]);
 						}
 						else {
 							trigger_error('Unknown value in ini file on line ' . ($linenum + 1) . ': ' . $linestr, E_USER_WARNING);
