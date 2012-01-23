@@ -48,15 +48,68 @@ class Mysql extends \mysqli {
 
 	public function query ($query, $resultmode = null) {
 		$t = microtime(true);
+		$error = false;
 		if (!$result = parent::query($query, $resultmode)) {
 			$append = self::debug_backtrace('query');
 			trigger_error('MySQL query error: (' . $this->errno . ') ' . $this->error . ' in "' . $query . '".' . $append);
+			$error = array('errno' => $this->errno, 'error' => $this->error);
 		}
 		$mysqliresult = (is_bool($result) ? $result : new mysqliresult($result));
 		$t = microtime(true) - $t;
-		$this->queryCache[] = array('query' => $query, 'time' => $t, 'rows' => $this->affected_rows);
+		$this->queryCache[] = array('query' => $query, 'time' => $t, 'rows' => $this->affected_rows, 'error' => $error);
 
 		return $mysqliresult;
+	}
+
+	public function explain () {
+		$colorfunction = __NAMESPACE__ . '\System::colorize';
+		$background = 'black';
+
+		$return = '';
+		$sqlnum = 0;
+		$sqltime = 0;
+		$doubles = array();
+		foreach ($this->queryCache as $query) {
+			$doubles[] = $query['query'];
+			$sqltime += $query['time'];
+			$sqlnum++;
+
+			$query['time'] = call_user_func($colorfunction, $query['time'], 'range:{"type": "alert", "max":0.09, "value":' . $query['time'] . '}', $background);
+
+			$return .= '<table>';
+			$return .= '<tr><td colspan=12>' . $query['query'] . '</td></tr>';
+			$return .= '<tr><td colspan="12">Affected rows: ' . $query['rows'] . ', Query Time: ' . $query['time'] . '</td></tr><tr>';
+			$temp = '';
+			if (($query['error'] === false) && (preg_match('/^SELECT/i', $query['query']) > 0)) {
+				$res = $this->query('EXPLAIN ' . $query['query']);
+				$fields = $res->fetch_fields();
+				foreach ($fields as $field) {
+					$return .= '<th>' . $field->name . '</th>';
+				}
+				$return .= '</tr>';
+				while ($row = $res->fetch_assoc()) {
+					$temp .= '<tr><td>' . join('</td><td>', $row) . '</td></tr>';
+				}
+			}
+			if ($temp == '') {
+				if (preg_match('/^SELECT/i', $query['query']) > 0) {
+					$return .= '<tr><td colspan="12">' . call_user_func($colorfunction, 'Erronymous query', 'error', $background) . ' ' . $query['rows'] . ' rows affected</td></tr>';
+				}
+				else {
+					$return .= '<tr><td colspan="12">Unknown query ' . $query['rows'] . ' rows affected</td></tr>';
+				}
+			}
+			else {
+				$return .= $temp;
+			}
+			$return .= '</table><br>';
+		}
+		if (count(array_unique($doubles)) < count($doubles)) {
+			$return .= call_user_func($colorfunction, 'You have duplicate queries!', 'error', $background) . '<br>';
+		}
+		$return .= 'Total sql time: ' . call_user_func($colorfunction, $query['time'], 'range:{"type": "alert", "max":0.3, "value":' . $sqltime . '}', $background) . '<br>';
+		$return .= 'Total sql queries: ' . $sqlnum;
+		return $return;
 	}
 
 	private function debug_backtrace ($function) {

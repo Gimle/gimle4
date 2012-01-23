@@ -73,7 +73,26 @@ class System {
 	 */
 	public static function colorize ($content, $color, $background) {
 		$template = '<span style="color: %s;">%s</span>';
-		if ($color === 'gray') {
+		if (substr($color, 0, 6) === 'range:') {
+			$config = json_decode(substr($color, 6), true);
+			if ($config['type'] === 'alert') {
+				$state = ($config['value'] / $config['max']);
+				if ($state >= 1) {
+					return sprintf($template, '#ff0000', $content);
+				}
+				elseif ($state === 0.5) {
+					return sprintf($template, '#ffff00', $content);
+				}
+				elseif ($state < 0.5) {
+					return sprintf($template, '#' . str_pad(dechex(round($state * 511)), 2, '0', STR_PAD_LEFT) . 'ff00', $content);
+				}
+				else {
+					$state = (0.5 - ($state - 0.5));
+					return sprintf($template, '#ff' . str_pad(dechex(round(($state) * 511)), 2, '0', STR_PAD_LEFT) . '00', $content);
+				}
+			}
+		}
+		elseif ($color === 'gray') {
 			return sprintf($template, 'gray', $content);
 		}
 		elseif ($color === 'string') {
