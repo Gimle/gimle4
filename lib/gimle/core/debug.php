@@ -25,7 +25,7 @@ class Debug {
 //			return;
 //		}
 		$colorfunction = __NAMESPACE__ . '\System::colorize';
-		$background = 'black';
+		$background = 'white';
 
 		$fixDumpString = function ($name, $value, $htmlspecial = true) use (&$colorfunction, &$background) {
 			if (in_array($name, array('[\'pass\']', '[\'password\']', '[\'PHP_AUTH_PW\']'))) {
@@ -180,7 +180,7 @@ class Debug {
 		if ($return == true) {
 			ob_start();
 		}
-		echo '<pre style="line-height: 120%; margin: 0px 0px 10px 0px; display: block; background: black; color: black; border: 1px solid #cccccc; padding: 5px; font-size: 10px;">';
+		echo '<pre style="line-height: 120%; margin: 0px 0px 10px 0px; display: block; border: 1px solid #cccccc; padding: 5px; font-size: 10px;' . ($background === 'black' ? ' background: black;' : '') . '">';
 
 		if ($title === false) {
 			$backtrace = debug_backtrace();

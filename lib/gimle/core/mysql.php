@@ -63,7 +63,7 @@ class Mysql extends \mysqli {
 
 	public function explain () {
 		$colorfunction = __NAMESPACE__ . '\System::colorize';
-		$background = 'black';
+		$background = 'white';
 
 		$return = '';
 		$sqlnum = 0;
@@ -76,9 +76,9 @@ class Mysql extends \mysqli {
 
 			$query['time'] = call_user_func($colorfunction, $query['time'], 'range:{"type": "alert", "max":0.09, "value":' . str_replace(',', '.', $query['time']) . '}', $background);
 
-			$return .= '<table style="background-color: #000;">';
-			$return .= '<tr><td colspan=12>' . call_user_func($colorfunction, $query['query'], 'black', $background) . '</td></tr>';
-			$return .= '<tr><td colspan="12">' . call_user_func($colorfunction, 'Affected rows: ' . $query['rows'] . ', Query Time: ', 'black', $background) . $query['time'] . '</td></tr><tr>';
+			$return .= '<table border="1" style="font-size: 12px; width: 100%; border-collapse: collapse;' . ($background === 'black' ? ' background-color: #000; color: #eee; border-color: #777;"' : ' border-color: #bbb;') . '">';
+			$return .= '<tr><td colspan="12" style="font-family: monospace; font-size: 11px;">' . $query['query'] . '</td></tr>';
+			$return .= '<tr><td colspan="12" style="background-color: #000; color: #eee;">Affected rows: ' . $query['rows'] . ', Query Time: ' . $query['time'] . '</td></tr><tr>';
 			$temp = '';
 			if (($query['error'] === false) && (preg_match('/^SELECT/i', $query['query']) > 0)) {
 				$res = $this->query('EXPLAIN ' . $query['query']);
