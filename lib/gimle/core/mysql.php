@@ -74,11 +74,11 @@ class Mysql extends \mysqli {
 			$sqltime += $query['time'];
 			$sqlnum++;
 
-			$query['time'] = call_user_func($colorfunction, $query['time'], 'range:{"type": "alert", "max":0.09, "value":' . $query['time'] . '}', $background);
+			$query['time'] = call_user_func($colorfunction, $query['time'], 'range:{"type": "alert", "max":0.09, "value":' . str_replace(',', '.', $query['time']) . '}', $background);
 
-			$return .= '<table>';
-			$return .= '<tr><td colspan=12>' . $query['query'] . '</td></tr>';
-			$return .= '<tr><td colspan="12">Affected rows: ' . $query['rows'] . ', Query Time: ' . $query['time'] . '</td></tr><tr>';
+			$return .= '<table style="background-color: #000;">';
+			$return .= '<tr><td colspan=12>' . call_user_func($colorfunction, $query['query'], 'black', $background) . '</td></tr>';
+			$return .= '<tr><td colspan="12">' . call_user_func($colorfunction, 'Affected rows: ' . $query['rows'] . ', Query Time: ', 'black', $background) . $query['time'] . '</td></tr><tr>';
 			$temp = '';
 			if (($query['error'] === false) && (preg_match('/^SELECT/i', $query['query']) > 0)) {
 				$res = $this->query('EXPLAIN ' . $query['query']);
@@ -90,14 +90,17 @@ class Mysql extends \mysqli {
 				while ($row = $res->fetch_assoc()) {
 					$temp .= '<tr><td>' . join('</td><td>', $row) . '</td></tr>';
 				}
+				if ($temp == '') {
+					if (preg_match('/^SELECT/i', $query['query']) > 0) {
+						$return .= '<tr><td colspan="12">' . call_user_func($colorfunction, 'Erronymous query ' . $query['rows'] . ' rows affected', 'error', $background) . '</td></tr>';
+					}
+					else {
+						$return .= '<tr><td colspan="12">' . call_user_func($colorfunction, 'Unknown query ' . $query['rows'] . ' rows affected', 'error', $background) . '</td></tr>';
+					}
+				}
 			}
-			if ($temp == '') {
-				if (preg_match('/^SELECT/i', $query['query']) > 0) {
-					$return .= '<tr><td colspan="12">' . call_user_func($colorfunction, 'Erronymous query', 'error', $background) . ' ' . $query['rows'] . ' rows affected</td></tr>';
-				}
-				else {
-					$return .= '<tr><td colspan="12">Unknown query ' . $query['rows'] . ' rows affected</td></tr>';
-				}
+			elseif ($query['error'] !== false) {
+				$return .= '<tr><td colspan="12">' . call_user_func($colorfunction, 'Error (' . $query['error']['errno'] . '): ' . $query['error']['error'], 'error', $background) . '</td></tr>';
 			}
 			else {
 				$return .= $temp;
