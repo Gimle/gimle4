@@ -151,16 +151,17 @@ class mysqliresult {
 		for ($i = 0; $i < $this->field_count; $i++) {
 			$tmp = $this->fetch_field_direct($i);
 			$finfo[$tmp->name] = $tmp->type;
+			unset($tmp);
 		}
 		$return = array();
 		while ($result = $this->fetch_assoc()) {
 			foreach ($result as $key => $value) {
 				if ($result[$key] === null) {
 				}
-				elseif ($finfo[$key] === 3) {
+				elseif (in_array($finfo[$key], array(1, 2, 3, 8, 9))) {
 					$result[$key] = (int)$result[$key];
 				}
-				elseif ($finfo[$key] === 4) {
+				elseif (in_array($finfo[$key], array(4, 5, 246))) {
 					$result[$key] = (float)$result[$key];
 				}
 			}
