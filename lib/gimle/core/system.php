@@ -56,7 +56,7 @@ class System {
 	 */
 	public static function mysql ($key) {
 		if ((!array_key_exists($key, self::$_sqlconnections)) || (!self::$_sqlconnections[$key] instanceof Mysql)) {
-			self::$_sqlconnections[$key] = new Mysql(System::$config['db'][$key]);
+			self::$_sqlconnections[$key] = new Mysql(System::$config['mysql'][$key]);
 		}
 		return self::$_sqlconnections[$key];
 	}
