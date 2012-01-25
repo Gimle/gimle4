@@ -90,13 +90,16 @@ class Mysql extends \mysqli {
 				while ($row = $res->fetch_assoc()) {
 					$temp .= '<tr><td>' . join('</td><td>', $row) . '</td></tr>';
 				}
-				if ($temp == '') {
+				if ($temp === '') {
 					if (preg_match('/^SELECT/i', $query['query']) > 0) {
 						$return .= '<tr><td colspan="12">' . call_user_func($colorfunction, 'Erronymous query ' . $query['rows'] . ' rows affected', 'error', $background) . '</td></tr>';
 					}
 					else {
 						$return .= '<tr><td colspan="12">' . call_user_func($colorfunction, 'Unknown query ' . $query['rows'] . ' rows affected', 'error', $background) . '</td></tr>';
 					}
+				}
+				else {
+					$return .= $temp;
 				}
 			}
 			elseif ($query['error'] !== false) {
