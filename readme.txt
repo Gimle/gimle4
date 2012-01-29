@@ -13,7 +13,6 @@ Features
 --------
 * Coding standard and build standards.
 * Enviroment setup. (Stuff like time-zone, character encoding and such).
-* Advanced var dumper.
 * Easy to extend and build anything on.
 
 
