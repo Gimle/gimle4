@@ -478,7 +478,6 @@ if (!defined('THIS_PATH')) {
 
 if (ENV_WEB) {
 	header('Content-Type: text/html; charset=' . mb_internal_encoding());
-	header('Last-Modified: ' . date('r', TIME_START));
 }
 
 if ((isset($config['extensions'])) && (!empty($config['extensions']))) {
