@@ -1,7 +1,7 @@
 Welcome to Gimlé Core v4
 ========================
 
-Project is in alpha development, do not use in production.
+Project is now in beta.
 
 Gimlé Core v4 is the base in the Gimlé system.
 
@@ -23,23 +23,31 @@ Features
 
 Requirements
 ------------
-php 5.4
+php 5.3 / 5.4
 
 
-Recomended file structure
--------------------------
-
+Recomended file structure.
+--------------------------
 extensions/
 gimle4/
+|-- init.php (The core init file).
+|-- config.ini (Global enviroment specifig settings).
 sites/
 |-- sitename/
-|   |-- cli/ (Command line interface scripts).
-|   |-- lib/
-|   |   |-- namespace/ (Classes and traits).
 |   |-- public/
 |   |   |-- index.php
 |   |-- config.php (Project specific settings).
 |   |-- config.ini (Enviroment specifig settings).
+
+
+Optional file structure for single sites.
+-----------------------------------------
+sitename/
+|-- public/
+|   |-- index.php
+|-- init.php (The core init file).
+|-- config.php (Project specific settings).
+|-- config.ini (Enviroment specifig settings).
 
 
 Installation
@@ -51,8 +59,19 @@ core = "/absoulute/path/to/gimle/core/"
 
 you can add this to the very beginning of your index.php file.
 
+php 5.4:
+--------
 define('SITE_DIR', substr(__DIR__, 0, strrpos(__DIR__, DIRECTORY_SEPARATOR) + 1));
 require parse_ini_file(SITE_DIR . 'config.ini')['core'] . 'init.php';
+--------
+
+php 5.3:
+--------
+define('SITE_DIR', substr(__DIR__, 0, strrpos(__DIR__, DIRECTORY_SEPARATOR) + 1));
+$ini = parse_ini_file(SITE_DIR . 'config.ini');
+require $ini['core'] . 'init.php';
+unset($ini);
+--------
 
 
 FAQ

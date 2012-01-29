@@ -20,6 +20,15 @@ else {
 	define('ENV_WEB', true);
 }
 
+define('ENV_DEV', 1);
+define('ENV_TEST', 2);
+define('ENV_PREPROD', 4);
+define('ENV_LIVE', 8);
+
+if (!defined('SITE_DIR')) {
+	define('SITE_DIR', CORE_DIR);
+}
+
 /**
  * Retrieve the current page from the url.
  *
@@ -323,7 +332,9 @@ if ($file = parse_config_file(SITE_DIR . 'config.ini')) {
 }
 unset($file);
 
-unset($config['core']);
+if (isset($config['core'])) {
+	unset($config['core']);
+}
 if (isset($config['timezone'])) {
 	date_default_timezone_set($config['timezone']);
 	unset($config['timezone']);
@@ -340,13 +351,14 @@ else {
 	mb_internal_encoding('utf-8');
 }
 
-define('ENV_DEV', 1);
-define('ENV_TEST', 2);
-define('ENV_PREPROD', 4);
-define('ENV_LIVE', 8);
 if (!defined('ENV_LEVEL')) {
-	//@todo Figure out how to load env level from config file.
-	define('ENV_LEVEL', ENV_LIVE);
+	if (isset($config['env_level'])) {
+		define('ENV_LEVEL', $config['env_level']);
+		unset($config['env_level']);
+	}
+	else {
+		define('ENV_LEVEL', ENV_LIVE);
+	}
 }
 
 if ((isset($config['admin']['ips'])) && (isset($_SERVER['REMOTE_ADDR'])) && (ip_in_ranges($_SERVER['REMOTE_ADDR'], $config['admin']['ips']))) {
