@@ -27,6 +27,7 @@ else {
 }
 
 require CORE_DIR . 'lib' . DIRECTORY_SEPARATOR . 'functions.php';
+require CORE_DIR . 'lib' . DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, __NAMESPACE__) . DIRECTORY_SEPARATOR . 'functions.php';
 require CORE_DIR . 'lib' . DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, __NAMESPACE__) . DIRECTORY_SEPARATOR . 'system.php';
 
 spl_autoload_register(__NAMESPACE__ . '\System::autoload');
