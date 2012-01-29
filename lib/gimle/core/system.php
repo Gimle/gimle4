@@ -23,13 +23,6 @@ class System {
 	public static $config = array();
 
 	/**
-	 * Array holding the initialized mysql connections.
-	 *
-	 * @var array
-	 */
-	private static $_sqlconnections = array();
-
-	/**
 	 * Autoload.
 	 *
 	 * @param string $name
@@ -46,19 +39,6 @@ class System {
 				break;
 			}
 		}
-	}
-
-	/**
-	 * Create a new or return already initialized database object.
-	 *
-	 * @param string $key the database key.
-	 * @return object Database object.
-	 */
-	public static function mysql ($key) {
-		if ((!array_key_exists($key, self::$_sqlconnections)) || (!self::$_sqlconnections[$key] instanceof Mysql)) {
-			self::$_sqlconnections[$key] = new Mysql(System::$config['mysql'][$key]);
-		}
-		return self::$_sqlconnections[$key];
 	}
 
 	/**
