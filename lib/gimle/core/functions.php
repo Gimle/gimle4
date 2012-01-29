@@ -51,44 +51,6 @@ function string_to_nested_array ($key, $value, $separator = '.') {
 }
 
 /**
- * Find a key in array.
- *
- * Search from the end of an arrey by searching for a negative key.
- *
- * @param array $arr The array to find a key in.
- * @param int $which Which key to look for.
- * @return bool|string key as string, or false if fail.
- */
-function array_key (array $arr = array (), $which = 0) {
-	$keys = array_keys($arr);
-	if ($which < 0) {
-		$keys = array_reverse($keys);
-		$which = ~$which;
-	}
-	if (isset($keys[$which])) {
-		return $keys[$which];
-	}
-	return false;
-}
-
-/**
- * Find a value in a array.
- *
- * Search from the end of an arrey by searching for a negative key.
- * The return value will be false both if the value of the key is the boolean value false, or if the lookup failed.
- *
- * @param array $arr The array to find a value in.
- * @param int $which Which key to look for.
- * @return bool|mixed value, or false if fail.
- */
-function array_value (array $arr = array (), $which = 0) {
-	if ($key = array_key($arr, $which)) {
-		return $arr[$key];
-	}
-	return false;
-}
-
-/**
  * Converts a config file formatted filesize string to bytes.
  *
  * @param string $size
