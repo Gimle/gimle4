@@ -1,7 +1,7 @@
 Welcome to Gimlé Core v4
 ========================
 
-!!! Project is in pre alpha development, do not use in production !!!
+Project is in alpha development, do not use in production.
 
 Gimlé Core v4 is a mix of an advanced bootstrapper and a basic framework.
 It's easy extendable for any kind of project.
@@ -13,12 +13,7 @@ Features
 --------
 * Coding standard and build standards.
 * Enviroment setup. (Stuff like time-zone, character encoding and such).
-* MySQL handler.
-* Language and translation utilities.
-* Let you use php in css and javascript files, and file concatination for fewer http requests.
 * Advanced var dumper.
-* Character encoding helper.
-* Strings, array and other var manipulation tools.
 * Easy to extend and build anything on.
 
 
