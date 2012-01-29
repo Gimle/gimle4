@@ -3,17 +3,22 @@ Welcome to Gimlé Core v4
 
 Project is in alpha development, do not use in production.
 
-Gimlé Core v4 is a mix of an advanced bootstrapper and a basic framework.
-It's easy extendable for any kind of project.
+Gimlé Core v4 is the base in the Gimlé system.
 
 The project focus is speed and flexibility.
 
 
 Features
 --------
-* Coding standard and build standards.
-* Enviroment setup. (Stuff like time-zone, character encoding and such).
+* Coding and build standards.
 * Easy to extend and build anything on.
+* Standards to ease moving between different enviroments.
+* Enviroment setup:
+  - Enviriomet (Development, test, Pre-production and production).
+  - Run mode (Web or CLI)
+  - error reporting.
+  - time-zone.
+  - character encoding.
 
 
 Requirements
