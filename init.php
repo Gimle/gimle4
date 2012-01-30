@@ -386,7 +386,7 @@ if (!defined('CACHE_DIR')) {
 	}
 }
 
-if (!defined('BASE_PATH')) {
+if ((ENV_WEB) && (!defined('BASE_PATH'))) {
 	if ((isset($config['base'])) && (!is_array($config['base']))) {
 		define('BASE_PATH', $config['base']);
 		define('BASE_PATH_LIVE', BASE_PATH);
@@ -449,7 +449,7 @@ if (!defined('BASE_PATH')) {
 	}
 }
 
-if (!defined('THIS_PATH')) {
+if ((ENV_WEB) && (!defined('THIS_PATH'))) {
 	$page = page();
 	$page = implode('/', $page) . (!empty($page) ? '/' : '');
 	define('THIS_PATH', BASE_PATH . $page);
