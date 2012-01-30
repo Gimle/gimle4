@@ -7,7 +7,6 @@
  */
 
 define('TIME_START', microtime(true));
-session_start();
 
 define('CORE_DIR', __DIR__ . DIRECTORY_SEPARATOR);
 
@@ -94,36 +93,6 @@ function string_to_nested_array ($key, $value, $separator = '.') {
 	$pre = array_shift($key);
 	$return = array($pre => string_to_nested_array(implode($separator, $key), $value, $separator));
 	return $return;
-}
-
-/**
- * Converts a config file formatted filesize string to bytes.
- *
- * @param string $size
- * @return int Number of bytes.
- */
-function string_to_bytes ($size) {
-	$size = trim($size);
-	$last = strtolower(substr($size, -1));
-	$size = (int)$size;
-	switch ($last) {
-		case 'g':
-			$size *= 1024;
-		case 'm':
-			$size *= 1024;
-		case 'k':
-			$size *= 1024;
-	}
-	return $size;
-}
-
-/**
- * Checks for the maximum size uploads.
- *
- * @return int Maximum number of bytes.
- */
-function get_upload_limit () {
-	return (int)min(string_to_bytes(ini_get('memory_limit')), string_to_bytes(ini_get('post_max_size')), string_to_bytes(ini_get('upload_max_filesize')));
 }
 
 /**
