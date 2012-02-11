@@ -29,7 +29,9 @@ if (!defined('SITE_DIR')) {
 		define('SITE_DIR', getenv('SITE_DIR'));
 	}
 	else {
-		define('SITE_DIR', CORE_DIR);
+		$cutpoint = strrpos(dirname($_SERVER['SCRIPT_FILENAME']), DIRECTORY_SEPARATOR);;
+		define('SITE_DIR', substr($_SERVER['SCRIPT_FILENAME'], 0, $cutpoint) . DIRECTORY_SEPARATOR);
+		unset($cutpoint);
 	}
 }
 
