@@ -25,7 +25,12 @@ define('ENV_PREPROD', 4);
 define('ENV_LIVE', 8);
 
 if (!defined('SITE_DIR')) {
-	define('SITE_DIR', CORE_DIR);
+	if (getenv('SITE_DIR') !== false) {
+		define('SITE_DIR', getenv('SITE_DIR'));
+	}
+	else {
+		define('SITE_DIR', CORE_DIR);
+	}
 }
 
 /**
@@ -225,8 +230,23 @@ function parse_config_file ($filename) {
 					if ((substr($line[1], 0, 1) === '"') && (substr($line[1], -1, 1) === '"')) {
 						$value = str_replace(array('\\"', '\\\\'), array('"', '\\'), substr($line[1], 1, -1));
 					}
-					elseif (ctype_digit($line[1])) {
-						$value = (int)$line[1];
+					elseif ((ctype_digit($line[1])) || ((substr($line[1], 0, 1) === '-') && (ctype_digit(substr($line[1], 1))))) {
+						$num = $line[1];
+						if (substr($num, 0, 1) === '-') {
+							$num = substr($line[1], 1);
+						}
+						if (substr($num, 0, 1) === '0') {
+							if (substr($line[1], 0, 1) === '-') {
+								$value = -octdec($line[1]);
+							}
+							else {
+								$value = octdec($line[1]);
+							}
+						}
+						else {
+							$value = (int)$line[1];
+						}
+						unset($num);
 					}
 					elseif ($line[1] === 'true') {
 						$value = true;
@@ -236,6 +256,18 @@ function parse_config_file ($filename) {
 					}
 					elseif ($line[1] === 'null') {
 						$value = null;
+					}
+					elseif (preg_match('/^0[xX][0-9a-fA-F]+$/', $line[1])) {
+						$value = hexdec(substr($line[1], 2));
+					}
+					elseif (preg_match('/^\-0[xX][0-9a-fA-F]+$/', $line[1])) {
+						$value = -hexdec(substr($line[1], 3));
+					}
+					elseif (preg_match('/^0b[01]+$/', $line[1])) {
+						$value = bindec(substr($line[1], 2));
+					}
+					elseif (preg_match('/^\-0b[01]+$/', $line[1])) {
+						$value = -bindec(substr($line[1], 3));
 					}
 					elseif (filter_var($line[1], FILTER_VALIDATE_FLOAT) !== false) {
 						$value = (float)$line[1];
@@ -345,6 +377,7 @@ if ((isset($config['server']['override'])) && (is_array($config['server']['overr
 		ini_set('html_errors', $config['server']['override']['html_errors']);
 	}
 	if ((isset($config['server']['override']['error_reporting'])) && (ctype_digit($config['server']['override']['error_reporting']))) {
+		ini_set('error_reporting', $config['server']['override']['error_reporting']);
 		error_reporting($config['server']['override']['error_reporting']);
 	}
 	if ((isset($config['server']['override']['max_execution_time'])) && (ctype_digit($config['server']['override']['max_execution_time']))) {
@@ -355,6 +388,7 @@ if ((isset($config['server']['override'])) && (is_array($config['server']['overr
 	}
 	if (ENV_CLI) {
 		if ((isset($config['server']['override']['error_reporting_cli'])) && (ctype_digit($config['server']['override']['error_reporting_cli']))) {
+			ini_set('error_reporting', $config['server']['override']['error_reporting_cli']);
 			error_reporting($config['server']['override']['error_reporting_cli']);
 		}
 		if ((isset($config['server']['override']['max_execution_time_cli'])) && (ctype_digit($config['server']['override']['max_execution_time_cli']))) {
