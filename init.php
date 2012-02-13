@@ -2,7 +2,8 @@
 /**
  * @copyright Copyright (c) 2012, Tux Solbakk
  * @license http://opensource.org/licenses/bsd-license.php BSD 2-Clause License
- * @version 4.0 alpha
+ * @version 4.0 Release Candidate 1
+ * @link http://gimlé.org/
  * @package core
  */
 
