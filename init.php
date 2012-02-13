@@ -412,16 +412,6 @@ if (!defined('TEMP_DIR')) {
 	}
 }
 
-if (!defined('CACHE_DIR')) {
-	if (isset($config['cache']['path'])) {
-		define('CACHE_DIR', $config['cache']['path']);
-		unset($config['cache']['path']);
-	}
-	else {
-		define('CACHE_DIR', TEMP_DIR);
-	}
-}
-
 if ((ENV_WEB) && (!defined('BASE_PATH'))) {
 	if ((isset($config['base'])) && (!is_array($config['base']))) {
 		define('BASE_PATH', $config['base']);
