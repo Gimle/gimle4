@@ -29,7 +29,7 @@ if (!defined('SITE_DIR')) {
 		define('SITE_DIR', getenv('SITE_DIR'));
 	}
 	else {
-		$cutpoint = strrpos(dirname($_SERVER['SCRIPT_FILENAME']), DIRECTORY_SEPARATOR);;
+		$cutpoint = strrpos(dirname($_SERVER['SCRIPT_FILENAME']), DIRECTORY_SEPARATOR);
 		define('SITE_DIR', substr($_SERVER['SCRIPT_FILENAME'], 0, $cutpoint) . DIRECTORY_SEPARATOR);
 		unset($cutpoint);
 	}
@@ -319,7 +319,6 @@ if ((ENV_WEB) && (page(0) === 'favicon.ico') && (file_exists(CORE_DIR . 'favicon
 	header('Content-Length: ' . filesize($file));
 	header('Last-Modified: ' . gmdate('D, d M Y H:i:s', filemtime($file)) . ' GMT');
 	header('Content-Type: image/x-icon');
-	header('X-Pad: avoid browser bug');
 	readfile($file);
 	exit();
 }
