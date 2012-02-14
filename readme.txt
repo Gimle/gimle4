@@ -1,7 +1,7 @@
 Welcome to Gimlé Core v4
 ========================
 
-This is the first Release Candidate.
+This is the second Release Candidate.
 
 Gimlé Core v4 is the base in the Gimlé system.
 
