@@ -2,7 +2,7 @@
 /**
  * @copyright Copyright (c) 2012, Tux Solbakk
  * @license http://opensource.org/licenses/bsd-license.php BSD 2-Clause License
- * @version 4.0 Release Candidate 2
+ * @version 4.0 Release Candidate 3
  * @link http://gimlé.org/
  * @package core
  */
@@ -430,7 +430,6 @@ if ((ENV_WEB) && (!defined('BASE_PATH'))) {
 			$port = ':' . $_SERVER['SERVER_PORT'];
 		}
 		$base .= '://';
-		$base = 'http' . (isset($_SERVER['HTTPS']) ? 's' : '') . '://';
 		$host = explode(':', $_SERVER['HTTP_HOST']);
 		$base .= $host[0] . $port . '/';
 		unset($host, $port);
