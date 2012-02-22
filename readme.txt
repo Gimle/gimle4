@@ -62,13 +62,13 @@ you can add this to the very beginning of your index.php file.
 php 5.4:
 --------
 define('SITE_DIR', substr(__DIR__, 0, strrpos(__DIR__, DIRECTORY_SEPARATOR) + 1));
-require parse_ini_file(SITE_DIR . 'config.ini')['core'] . 'init.php';
+require parse_ini_file(SITE_DIR . 'config.ini', true)['core'] . 'init.php';
 --------
 
 php 5.3:
 --------
 define('SITE_DIR', substr(__DIR__, 0, strrpos(__DIR__, DIRECTORY_SEPARATOR) + 1));
-$ini = parse_ini_file(SITE_DIR . 'config.ini');
+$ini = parse_ini_file(SITE_DIR . 'config.ini', true);
 require $ini['core'] . 'init.php';
 unset($ini);
 --------
