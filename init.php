@@ -7,7 +7,9 @@
  * @package core
  */
 
-define('TIME_START', microtime(true));
+if (!isset($_SERVER['REQUEST_TIME_FLOAT'])) {
+	$_SERVER['REQUEST_TIME_FLOAT'] = (float) number_format(microtime(true), 3, '.', '');
+}
 
 define('CORE_DIR', __DIR__ . DIRECTORY_SEPARATOR);
 
