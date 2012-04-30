@@ -1,11 +1,15 @@
-<?php namespace gimle\core;
+<?php
 /**
+ * Gimle 4
+ *
  * @copyright Copyright (c) 2012, Tux Solbakk
  * @license http://opensource.org/licenses/bsd-license.php BSD 2-Clause License
- * @version 4.0 Release Candidate 3
+ * @version 4.0
  * @link http://gimlé.org/
  * @package core
  */
+
+namespace gimle\core;
 
 if (!isset($_SERVER['REQUEST_TIME_FLOAT'])) {
 	$_SERVER['REQUEST_TIME_FLOAT'] = (float) number_format(microtime(true), 3, '.', '');
@@ -41,8 +45,8 @@ if (!defined('SITE_DIR')) {
 /**
  * Retrieve the current page from the url.
  *
- * @param int $part Optional
- * @return array|string
+ * @param int $part Optional, if no part is specified, return the complete array.
+ * @return mixed array|string|false Array if no part specified, string if found, false if not set.
  */
 function page ($part = false) {
 	$path = array();
@@ -63,11 +67,10 @@ function page ($part = false) {
  *
  * Values will overwrite previous array for every additional array passed to the method.
  *
- * @param array $array1 Initial array to merge.
- * @param array $… [optional] Variable list of arrays to recursively merge.
+ * @param array $array Variable list of arrays to recursively merge.
  * @return array The merged array.
  */
-function array_merge_recursive_distinct (array $array1) {
+function array_merge_recursive_distinct (array $array) {
 	$arrays = func_get_args();
 	if (count($arrays) > 1) {
 		array_shift($arrays);
@@ -75,16 +78,16 @@ function array_merge_recursive_distinct (array $array1) {
 			if (!empty($array2)) {
 				foreach ($array2 as $key => $val) {
 					if (is_array($array2[$key])) {
-						$array1[$key] = ((isset($array1[$key])) && (is_array($array1[$key])) ? array_merge_recursive_distinct($array1[$key], $array2[$key]) : $array2[$key]);
+						$array[$key] = ((isset($array[$key])) && (is_array($array[$key])) ? array_merge_recursive_distinct($array[$key], $array2[$key]) : $array2[$key]);
 					}
 					else {
-						$array1[$key] = $val;
+						$array[$key] = $val;
 					}
 				}
 			}
 		}
 	}
-	return $array1;
+	return $array;
 }
 
 /**
@@ -188,7 +191,7 @@ function ips_in_range (array $ips, $range) {
  * Check if the specified ip is part of any of the ranges.
  *
  * @param string $ip
- * @param string $ranges
+ * @param array $ranges
  * @return boolean
  */
 function ip_in_ranges ($ip, array $ranges) {
@@ -209,7 +212,7 @@ function ip_in_ranges ($ip, array $ranges) {
  * For php files this function will look for a variable called $config, and return it.
  *
  * @param string $filename the full path to the file to parse.
- * @return array|bool array with the read configuration file, or false upon failure.
+ * @return mixed array|false array with the read configuration file, or false upon failure.
  */
 function parse_config_file ($filename) {
 	if (!file_exists($filename)) {
