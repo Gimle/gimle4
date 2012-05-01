@@ -456,7 +456,7 @@ if ((ENV_WEB) && (!defined('BASE_PATH'))) {
 					break;
 				}
 				if (isset($value['path'])) {
-					if (((isset($value['start'])) && ($value['start'] === substr($base, 0, strlen($value['start'])))) || ((isset($value['regex'])) && (preg_match($value['regex'], $base)))){
+					if (((isset($value['start'])) && ($value['start'] === substr($base, 0, strlen($value['start'])))) || ((isset($value['regex'])) && (preg_match($value['regex'], $base)))) {
 						$base = $value['path'];
 						if (isset($value['live'])) {
 							$live = $value['live'];
