@@ -15,6 +15,10 @@ if (!isset($_SERVER['REQUEST_TIME_FLOAT'])) {
 	$_SERVER['REQUEST_TIME_FLOAT'] = (float) number_format(microtime(true), 3, '.', '');
 }
 
+/**
+ * The local absolute location of gimle4.
+ * @var string CORE_DIR
+ */
 define('CORE_DIR', __DIR__ . DIRECTORY_SEPARATOR);
 
 if (PHP_SAPI === 'cli') {
@@ -22,13 +26,37 @@ if (PHP_SAPI === 'cli') {
 	define('ENV_WEB', false);
 }
 else {
+	/**
+	 * A boolean representation telling if the script is running in cli mode.
+	 * @var bool
+	 */
 	define('ENV_CLI', false);
+	/**
+	 * A boolean representation telling if the script is running in web mode.
+	 * @var bool
+	 */
 	define('ENV_WEB', true);
 }
 
+/**
+ * A preset for development comparison.
+ * @var int
+ */
 define('ENV_DEV', 1);
+/**
+ * A preset for test comparison.
+ * @var int
+ */
 define('ENV_TEST', 2);
+/**
+ * A preset for preproduction comparison.
+ * @var int
+ */
 define('ENV_PREPROD', 4);
+/**
+ * A preset for live comparison.
+ * @var int
+ */
 define('ENV_LIVE', 8);
 
 if (!defined('SITE_DIR')) {
@@ -37,6 +65,14 @@ if (!defined('SITE_DIR')) {
 	}
 	else {
 		$cutpoint = strrpos(dirname($_SERVER['SCRIPT_FILENAME']), DIRECTORY_SEPARATOR);
+		/**
+		 * The local absolute location of the site.
+		 *
+		 * To override this, define the SITE_DIR before gimle4 is loaded.
+		 * The location should be absolute, and end with a trailing slash.
+		 *
+		 * @var string
+		 */
 		define('SITE_DIR', substr($_SERVER['SCRIPT_FILENAME'], 0, $cutpoint) . DIRECTORY_SEPARATOR);
 		unset($cutpoint);
 	}
@@ -45,8 +81,10 @@ if (!defined('SITE_DIR')) {
 /**
  * Retrieve the current page from the url.
  *
- * @param int $part Optional, if no part is specified, return the complete array.
- * @return mixed array|string|false Array if no part specified, string if found, false if not set.
+ * @param mixed $part Integer for a part, or false to return the complete array.
+ * @return mixed array, string or boolean.
+ * <p>if <em>$part</em> is false, an array is returned with all the set parts of the url.</p>
+ * <p>if <em>$part</em> is an integer, a string representation of the corresponding part of the url is returned, or false if not set.</p>
  */
 function page ($part = false) {
 	$path = array();
@@ -70,7 +108,7 @@ function page ($part = false) {
  * @param array $array Variable list of arrays to recursively merge.
  * @return array The merged array.
  */
-function array_merge_recursive_distinct (array $array) {
+function array_merge_recursive_distinct ($array) {
 	$arrays = func_get_args();
 	if (count($arrays) > 1) {
 		array_shift($arrays);
@@ -93,10 +131,10 @@ function array_merge_recursive_distinct (array $array) {
 /**
  * Convert a separated string to a nested array.
  *
- * @param string $key
- * @param mixed $value
- * @param string $separator
- * @return array
+ * @param string $key The key of the array to search in.
+ * @param mixed $value The value to be set.
+ * @param string $separator The separator string to look for. Default is a dot (.).
+ * @return array The resulting array.
  */
 function string_to_nested_array ($key, $value, $separator = '.') {
 	if (strpos($key, $separator) === false) {
@@ -111,9 +149,17 @@ function string_to_nested_array ($key, $value, $separator = '.') {
 /**
  * Check if the specified ip is part of a range.
  *
- * @param string $ip
- * @param string $range
- * @return boolean
+ * @param string $ip The ip to check.
+ * @param string $range The range to compare against.
+ * <p>A range can be:</p>
+ * <ul>
+ * <li>A normal ip, example: 127.0.0.1</li>
+ * <li>A ip with wildcards: 172.16.17.* or 172.16.17.0</li>
+ * <li>A netmask: 172.16.17.0/16</li>
+ * <li>From - to: 172.16.17.1-172.16.17.32</li>
+ * </ul>
+ *
+ * @return boolean true or false if the ip was found in the range.
  */
 function ip_in_range ($ip, $range) {
 	if (strpos($range, '/') !== false) {
@@ -162,7 +208,7 @@ function ip_in_range ($ip, $range) {
 				return true;
 			}
 		}
-		elseif ($ip == $range) {
+		elseif ($ip === $range) {
 			return true;
 		}
 	}
@@ -172,11 +218,13 @@ function ip_in_range ($ip, $range) {
 /**
  * Check if one of the specified ips is part of a range.
  *
- * @param array $ips
- * @param string $range
- * @return boolean
+ * @see ip_in_range
+ *
+ * @param array $ips The ips to check.
+ * @param string $range The range to compare against.
+ * @return boolean true or false if any of the ips was found in the range.
  */
-function ips_in_range (array $ips, $range) {
+function ips_in_range ($ips, $range) {
 	if (!empty($ips)) {
 		foreach ($ips as $ip) {
 			if (ip_in_range($ip, $range)) {
@@ -190,11 +238,13 @@ function ips_in_range (array $ips, $range) {
 /**
  * Check if the specified ip is part of any of the ranges.
  *
- * @param string $ip
- * @param array $ranges
- * @return boolean
+ * @see ip_in_range
+ *
+ * @param string $ip The ip to check.
+ * @param array $ranges An array of ranges to compare against.
+ * @return boolean true or false if the ip was found in any of the ranges.
  */
-function ip_in_ranges ($ip, array $ranges) {
+function ip_in_ranges ($ip, $ranges) {
 	if (!empty($ranges)) {
 		foreach ($ranges as $range) {
 			if (ip_in_range($ip, $range)) {
@@ -212,7 +262,7 @@ function ip_in_ranges ($ip, array $ranges) {
  * For php files this function will look for a variable called $config, and return it.
  *
  * @param string $filename the full path to the file to parse.
- * @return mixed array|false array with the read configuration file, or false upon failure.
+ * @return mixed array or false. Array with the read configuration file, or false upon failure.
  */
 function parse_config_file ($filename) {
 	if (!file_exists($filename)) {
@@ -365,6 +415,24 @@ if (!defined('ENV_LEVEL')) {
 		unset($config['env_level']);
 	}
 	else {
+		/**
+		 * The current env level.
+		 *
+		 * Default value is ENV_LIVE.
+		 *
+		 * <p>Example defining in config.ini</p>
+		 * <code>env_level = ENV_DEV</code>
+		 *
+		 * <p>Example defining in config.php</p>
+		 * <code>$config['env_level'] = ENV_DEV;</code>
+		 *
+		 * <p>Example checking if current env level is development or test.</p>
+		 * <code>if (ENV_LEVEL & (ENV_DEV | ENV_TEST)) {
+		 * <span style="white-space: pre; font-size: 50%;">&Tab;</span>// Code for development and test.
+		 * }</code>
+		 *
+		 * @var int
+		 */
 		define('ENV_LEVEL', ENV_LIVE);
 	}
 }
@@ -373,6 +441,20 @@ if ((isset($config['admin']['ips'])) && (isset($_SERVER['REMOTE_ADDR'])) && (ip_
 	define('FROM_ADMIN_IP', true);
 }
 else {
+	/**
+	 * Check if the requestor comes from an ip defined in the config.admin.ips array.
+	 *
+	 * <p>Example of config.ini</p>
+	 * <code>[admin.ips]
+	 * localhost = "127.0.0.1"
+	 * localnet  = "172.16.17.*"</code>
+	 *
+	 * <p>Example of config.php</p>
+	 * <code>$config['admin']['ips']['localhost'] = '127.0.0.1';
+	 * $config['admin']['ips']['localnet']  = '172.16.17.*';</code>
+	 *
+	 * @var bool
+	 */
 	define('FROM_ADMIN_IP', false);
 }
 
@@ -413,6 +495,21 @@ if (!defined('TEMP_DIR')) {
 		unset($config['temp']);
 	}
 	else {
+		/**
+		 * The local absolute location of where temporary files should be stored.
+		 *
+		 * Can be set in the config.temp string or defined before gimle is loaded.
+		 * The location should be absolute, and end with a trailing slash.
+		 * This will default to the systems default temp directory.
+		 *
+		 * <p>Example of config.ini</p>
+		 * <code>tmep_dir = "/tmp/"</code>
+		 *
+		 * <p>Example of config.php</p>
+		 * <code>$config['tmep_dir'] = '/tmp/';</code>
+		 *
+		 * @var string
+		 */
 		define('TEMP_DIR', rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR);
 	}
 }
@@ -467,12 +564,50 @@ if ((ENV_WEB) && (!defined('BASE_PATH'))) {
 			}
 			unset($value);
 		}
+		/**
+		 * The public base path of the site.
+		 *
+		 * This can be set in a config file.
+		 * When multiple domains is matched, it will match in the same order as in the config.
+		 * The default value will be calculated automatically.
+		 *
+		 * <p>Example single domain as string in config.ini</p>
+		 * <code>base = "http://example.com/"</code>
+		 *
+		 * <p>Example single domain as array in config.ini</p>
+		 * <code>[base]
+		 * path = "http://example.com/"</code>
+		 *
+		 * <p>Example multiple domain with string start match in config.ini</p>
+		 * <code>[base.mobile]
+		 * start = "http://m.";
+		 * path = "http://m.example.com/"
+		 *
+		 * [base.default]
+		 * start = "http://";
+		 * path = "http://example.com/"</code>
+		 * <p>To search with a regular expression, change the "start" keyword with "regex".</p>
+		 *
+		 * <p>Example single domain in config.php</p>
+		 * <code>$config['base']['path'] = 'http://example.com/';</code>
+		 *
+		 * @var string
+		 */
 		define('BASE_PATH', $base);
 		if (isset($live)) {
 			define('BASE_PATH_LIVE', $live);
 			unset($live);
 		}
 		else {
+			/**
+			 * The public live version of the base path of the site.
+			 *
+			 * This can be set when the config path is an array. looks for the "live" keyword.
+			 *
+			 * @see BASE_PATH
+			 *
+			 * @var string
+			 */
 			define('BASE_PATH_LIVE', BASE_PATH);
 		}
 		unset($base);
@@ -482,7 +617,21 @@ if ((ENV_WEB) && (!defined('BASE_PATH'))) {
 if ((ENV_WEB) && (!defined('THIS_PATH'))) {
 	$page = page();
 	$page = implode('/', $page) . (!empty($page) ? '/' : '');
+	/**
+	 * The current public absolute path.
+	 *
+	 * Relies on the <em>BASE_PATH</em> to be set correctly.
+	 *
+	 * @var string
+	 */
 	define('THIS_PATH', BASE_PATH . $page);
+	/**
+	 * The live version of the current public absolute path.
+	 *
+	 * Relies on the <em>BASE_PATH_LIVE</em> to be set correctly.
+	 *
+	 * @var string
+	 */
 	define('THIS_PATH_LIVE', BASE_PATH_LIVE . $page);
 	unset($page);
 }
