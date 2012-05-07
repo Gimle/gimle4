@@ -21,23 +21,6 @@ if (!isset($_SERVER['REQUEST_TIME_FLOAT'])) {
  */
 define('CORE_DIR', __DIR__ . DIRECTORY_SEPARATOR);
 
-if (PHP_SAPI === 'cli') {
-	define('ENV_CLI', true);
-	define('ENV_WEB', false);
-}
-else {
-	/**
-	 * A boolean representation telling if the script is running in cli mode.
-	 * @var bool
-	 */
-	define('ENV_CLI', false);
-	/**
-	 * A boolean representation telling if the script is running in web mode.
-	 * @var bool
-	 */
-	define('ENV_WEB', true);
-}
-
 /**
  * A preset for development comparison.
  * @var int
@@ -58,6 +41,17 @@ define('ENV_PREPROD', 4);
  * @var int
  */
 define('ENV_LIVE', 8);
+/**
+ * A preset for cli mode comparison.
+ * @var int
+ */
+define('ENV_CLI', 16);
+/**
+ * A preset for web mode comparison.
+ * @var int
+ */
+define('ENV_WEB', 32);
+
 
 if (!defined('SITE_DIR')) {
 	if (getenv('SITE_DIR') !== false) {
@@ -409,33 +403,44 @@ else {
 	mb_internal_encoding('utf-8');
 }
 
-if (!defined('ENV_LEVEL')) {
-	if (isset($config['env_level'])) {
-		define('ENV_LEVEL', $config['env_level']);
-		unset($config['env_level']);
-	}
-	else {
-		/**
-		 * The current env level.
-		 *
-		 * Default value is ENV_LIVE.
-		 *
-		 * <p>Example defining in config.ini</p>
-		 * <code>env_level = ENV_DEV</code>
-		 *
-		 * <p>Example defining in config.php</p>
-		 * <code>$config['env_level'] = ENV_DEV;</code>
-		 *
-		 * <p>Example checking if current env level is development or test.</p>
-		 * <code>if (ENV_LEVEL & (ENV_DEV | ENV_TEST)) {
-		 * <span style="white-space: pre; font-size: 50%;">&Tab;</span>// Code for development and test.
-		 * }</code>
-		 *
-		 * @var int
-		 */
-		define('ENV_LEVEL', ENV_LIVE);
-	}
+$env_add = ((PHP_SAPI === 'cli') ? ENV_CLI : ENV_WEB);
+if (isset($config['env_level'])) {
+	define('ENV_LEVEL', $config['env_level'] | $env_add);
+	unset($config['env_level']);
 }
+else {
+	/**
+	 * The current env level.
+	 *
+	 * Default value is ENV_LIVE.
+	 * ENV_CLI or ENV_WEB will automatically be added.
+	 *
+	 * <p>Example defining in config.ini</p>
+	 * <code>env_level = ENV_DEV</code>
+	 *
+	 * <p>Example defining in config.php</p>
+	 * <code>$config['env_level'] = ENV_DEV;</code>
+	 *
+	 * <p>Example checking if current env level is cli mode.</p>
+	 * <code>if (ENV_LEVEL & ENV_CLI) {
+	 * <span style="white-space: pre; font-size: 50%;">&Tab;</span>// Code for cli.
+	 * }</code>
+	 *
+	 * <p>Example checking if current env level is development or test.</p>
+	 * <code>if (ENV_LEVEL & (ENV_DEV | ENV_TEST)) {
+	 * <span style="white-space: pre; font-size: 50%;">&Tab;</span>// Code for development and test.
+	 * }</code>
+	 *
+	 * <p>Example checking if current env level is live and web.</p>
+	 * <code>if ((ENV_LEVEL & ENV_LIVE) && (ENV_LEVEL & ENV_WEB)) {
+	 * <span style="white-space: pre; font-size: 50%;">&Tab;</span>// Code for live web.
+	 * }</code>
+	 *
+	 * @var int
+	 */
+	define('ENV_LEVEL', ENV_LIVE | $env_add);
+}
+unset($env_add);
 
 if ((isset($config['admin']['ips'])) && (isset($_SERVER['REMOTE_ADDR'])) && (ip_in_ranges($_SERVER['REMOTE_ADDR'], $config['admin']['ips']))) {
 	define('FROM_ADMIN_IP', true);
@@ -458,7 +463,7 @@ else {
 	define('FROM_ADMIN_IP', false);
 }
 
-if (ENV_CLI) {
+if (ENV_LEVEL & ENV_CLI) {
 	ini_set('html_errors', false);
 }
 if ((isset($config['server']['override'])) && (is_array($config['server']['override'])) && (!empty($config['server']['override']))) {
@@ -475,7 +480,7 @@ if ((isset($config['server']['override'])) && (is_array($config['server']['overr
 	if (isset($config['server']['override']['memory_limit'])) {
 		ini_set('memory_limit', $config['server']['override']['memory_limit']);
 	}
-	if (ENV_CLI) {
+	if (ENV_LEVEL & ENV_CLI) {
 		if (isset($config['server']['override']['error_reporting_cli'])) {
 			ini_set('error_reporting', $config['server']['override']['error_reporting_cli']);
 			error_reporting($config['server']['override']['error_reporting_cli']);
