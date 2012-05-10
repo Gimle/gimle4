@@ -355,7 +355,7 @@ function parse_config_file ($filename) {
 	return false;
 }
 
-if ((ENV_WEB) && (page(0) === 'favicon.ico') && (file_exists(CORE_DIR . 'favicon.ico'))) {
+if ((page(0) === 'favicon.ico') && (file_exists(CORE_DIR . 'favicon.ico'))) {
 	$file = CORE_DIR . 'favicon.ico';
 	header_remove('Expires');
 	header_remove('Pragma');
@@ -467,7 +467,7 @@ if (ENV_LEVEL & ENV_CLI) {
 	ini_set('html_errors', false);
 }
 if ((isset($config['server']['override'])) && (is_array($config['server']['override'])) && (!empty($config['server']['override']))) {
-	if ((ENV_WEB) && (isset($config['server']['override']['html_errors']))) {
+	if ((ENV_LEVEL & ENV_WEB) && (isset($config['server']['override']['html_errors']))) {
 		ini_set('html_errors', $config['server']['override']['html_errors']);
 	}
 	if (isset($config['server']['override']['error_reporting'])) {
@@ -519,7 +519,7 @@ if (!defined('TEMP_DIR')) {
 	}
 }
 
-if ((ENV_WEB) && (!defined('BASE_PATH'))) {
+if ((ENV_LEVEL & ENV_WEB) && (!defined('BASE_PATH'))) {
 	if ((isset($config['base'])) && (!is_array($config['base']))) {
 		define('BASE_PATH', $config['base']);
 		define('BASE_PATH_LIVE', BASE_PATH);
@@ -619,7 +619,7 @@ if ((ENV_WEB) && (!defined('BASE_PATH'))) {
 	}
 }
 
-if ((ENV_WEB) && (!defined('THIS_PATH'))) {
+if ((ENV_LEVEL & ENV_WEB) && (!defined('THIS_PATH'))) {
 	$page = page();
 	$page = implode('/', $page) . (!empty($page) ? '/' : '');
 	/**
@@ -641,7 +641,7 @@ if ((ENV_WEB) && (!defined('THIS_PATH'))) {
 	unset($page);
 }
 
-if (ENV_WEB) {
+if (ENV_LEVEL & ENV_WEB) {
 	header('Content-Type: text/html; charset=' . mb_internal_encoding());
 }
 

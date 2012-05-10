@@ -1,6 +1,9 @@
 Gimlé Change log
 ================
 
+Version 4.1.1
+Fixed bugs where the old style check for ENV_WEB was used.
+
 Version 4.1
 -----------
 ENV_CLI and ENV_WEB is changed from boolean values to integers for bitwise comparison.
