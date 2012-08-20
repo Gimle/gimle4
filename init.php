@@ -347,7 +347,7 @@ function parse_config_file ($filename) {
 		return $return;
 	}
 	elseif (substr($filename, -4, 4) === '.php') {
-		require $filename;
+		include $filename;
 		if ((isset($config)) && (is_array($config))) {
 			return $config;
 		}
