@@ -12,7 +12,7 @@ Features
 * Easy to extend and build anything on.
 * Standards to ease moving between different enviroments.
 * Enviroment setup:
-  - Enviriomet (Development, test, Pre-production and production).
+  - Enviromet (Development, test, Pre-production and production).
   - Run mode (Web or CLI)
   - error reporting.
   - time-zone.
@@ -82,6 +82,11 @@ A: No. One of the ideas behind it, is to reduce overhead to a minimum.
 
 Q: Is this a MVC Framework?
 A: No. But this is a good platform to build any kind of framework you want on. A MVC extension might be on the table for later on.
+
+
+License
+-------
+http://opensource.org/licenses/bsd-license.php BSD 2-Clause License
 
 
 Further reading
