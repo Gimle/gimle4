@@ -98,21 +98,32 @@ function page ($part = false) {
  * Merge two or more arrays recursivly and preserve keys.
  *
  * Values will overwrite previous array for every additional array passed to the method.
+ * Add the boolean value false to the end to have latest array control the order.
  *
  * @param array $array Variable list of arrays to recursively merge.
  * @return array The merged array.
  */
 function array_merge_recursive_distinct ($array) {
 	$arrays = func_get_args();
+	$reposition = false;
+	if (is_bool($arrays[count($arrays) - 1])) {
+		if ($arrays[count($arrays) - 1]) {
+			$reposition = true;
+		}
+		array_pop($arrays);
+	}
 	if (count($arrays) > 1) {
 		array_shift($arrays);
 		foreach ($arrays as $array2) {
 			if (!empty($array2)) {
 				foreach ($array2 as $key => $val) {
 					if (is_array($array2[$key])) {
-						$array[$key] = ((isset($array[$key])) && (is_array($array[$key])) ? array_merge_recursive_distinct($array[$key], $array2[$key]) : $array2[$key]);
+						$array[$key] = ((isset($array[$key])) && (is_array($array[$key])) ? array_merge_recursive_distinct($array[$key], $array2[$key], $reposition) : $array2[$key]);
 					}
 					else {
+						if ((isset($array[$key])) && ($reposition === true)) {
+							unset($array[$key]);
+						}
 						$array[$key] = $val;
 					}
 				}
@@ -377,10 +388,10 @@ if ((CORE_DIR !== SITE_DIR) && (!$config = parse_config_file(CORE_DIR . 'config.
 	$config = array();
 }
 if ($file = parse_config_file(SITE_DIR . 'config.php')) {
-	$config = array_merge_recursive_distinct($config, $file);
+	$config = array_merge_recursive_distinct($config, $file, true);
 }
 if ($file = parse_config_file(SITE_DIR . 'config.ini')) {
-	$config = array_merge_recursive_distinct($config, $file);
+	$config = array_merge_recursive_distinct($config, $file, true);
 }
 unset($file);
 
