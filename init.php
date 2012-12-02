@@ -366,24 +366,6 @@ function parse_config_file ($filename) {
 	return false;
 }
 
-if ((page(0) === 'favicon.ico') && (file_exists(CORE_DIR . 'favicon.ico'))) {
-	$file = CORE_DIR . 'favicon.ico';
-	header_remove('Expires');
-	header_remove('Pragma');
-	header_remove('Cache-Control');
-	header_remove('X-Powered-By');
-	header_remove('Set-Cookie');
-	header_remove('Content-Language');
-	header('Accept-Ranges: bytes');
-	header('Server: ' . $_SERVER['SERVER_SOFTWARE']);
-	header('ETag: "' . md5_file($file) . '"');
-	header('Content-Length: ' . filesize($file));
-	header('Last-Modified: ' . gmdate('D, d M Y H:i:s', filemtime($file)) . ' GMT');
-	header('Content-Type: image/x-icon');
-	readfile($file);
-	exit();
-}
-
 if ((CORE_DIR !== SITE_DIR) && (!$config = parse_config_file(CORE_DIR . 'config.ini'))) {
 	$config = array();
 }
@@ -663,4 +645,22 @@ if ((isset($config['extensions'])) && (!empty($config['extensions']))) {
 		}
 	}
 	unset($value);
+}
+
+if ((page(0) === 'favicon.ico') && (file_exists(CORE_DIR . 'favicon.ico'))) {
+	$file = CORE_DIR . 'favicon.ico';
+	header_remove('Expires');
+	header_remove('Pragma');
+	header_remove('Cache-Control');
+	header_remove('X-Powered-By');
+	header_remove('Set-Cookie');
+	header_remove('Content-Language');
+	header('Accept-Ranges: bytes');
+	header('Server: ' . $_SERVER['SERVER_SOFTWARE']);
+	header('ETag: "' . md5_file($file) . '"');
+	header('Content-Length: ' . filesize($file));
+	header('Last-Modified: ' . gmdate('D, d M Y H:i:s', filemtime($file)) . ' GMT');
+	header('Content-Type: image/x-icon');
+	readfile($file);
+	exit();
 }
