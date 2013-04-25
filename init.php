@@ -32,25 +32,30 @@ define('ENV_DEV', 1);
  */
 define('ENV_TEST', 2);
 /**
+ * A preset for stage comparison.
+ * @var int
+ */
+define('ENV_STAGE', 4);
+/**
  * A preset for preproduction comparison.
  * @var int
  */
-define('ENV_PREPROD', 4);
+define('ENV_PREPROD', 8);
 /**
  * A preset for live comparison.
  * @var int
  */
-define('ENV_LIVE', 8);
+define('ENV_LIVE', 16);
 /**
  * A preset for cli mode comparison.
  * @var int
  */
-define('ENV_CLI', 16);
+define('ENV_CLI', 32);
 /**
  * A preset for web mode comparison.
  * @var int
  */
-define('ENV_WEB', 32);
+define('ENV_WEB', 64);
 
 
 if (!defined('SITE_DIR')) {
