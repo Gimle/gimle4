@@ -645,7 +645,7 @@ if (ENV_LEVEL & ENV_WEB) {
 
 if ((isset($config['extensions'])) && (!empty($config['extensions']))) {
 	foreach ($config['extensions'] as $value) {
-		if (file_exists($value . 'init.php')) {
+		if ((is_string($value)) && (file_exists($value . 'init.php'))) {
 			include $value . 'init.php';
 		}
 	}
