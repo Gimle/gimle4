@@ -78,6 +78,11 @@ if (!defined('SITE_DIR')) {
 }
 
 /**
+ * The basename of the site dir.
+ */
+define('SITE_BASENAME', substr(trim(SITE_DIR, DIRECTORY_SEPARATOR), strrpos(trim(SITE_DIR, DIRECTORY_SEPARATOR), DIRECTORY_SEPARATOR) + 1));
+
+/**
  * Retrieve the current page from the url.
  *
  * @param mixed $part Integer for a part, or false to return the complete array.
