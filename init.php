@@ -550,7 +550,7 @@ if ((ENV_LEVEL & ENV_WEB) && (!defined('BASE_PATH'))) {
 		}
 
 		if ((isset($config['base'])) && (!empty($config['base']))) {
-			foreach ($config['base'] as $value) {
+			foreach ($config['base'] as $key => $value) {
 				if (!is_array($value)) {
 					if (isset($config['base']['path'])) {
 						$base = $config['base']['path'];
@@ -560,13 +560,24 @@ if ((ENV_LEVEL & ENV_WEB) && (!defined('BASE_PATH'))) {
 					}
 					break;
 				}
+				/**
+				 * The absolute path to the base of each of the base paths defined in config.
+				 *
+				 * <p>When working with multiple bases in config, each will be assigned to their own constant, starting with BASE_</p>
+				 */
+				define('BASE_' . mb_strtoupper($key), $value['path']);
 				if (isset($value['path'])) {
 					if (((isset($value['start'])) && ($value['start'] === substr($base, 0, strlen($value['start'])))) || ((isset($value['regex'])) && (preg_match($value['regex'], $base)))) {
 						$base = $value['path'];
 						if (isset($value['live'])) {
 							$live = $value['live'];
 						}
-						break;
+						/**
+						 * The key to the currenty matched base path from config.
+						 *
+						 * <p>When working with multiple bases in config, this will contain the key of the matched block.</p>
+						 */
+						define('BASE_PATH_KEY', $key);
 					}
 				}
 			}
