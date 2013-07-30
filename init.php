@@ -439,6 +439,11 @@ else {
 	 * <span style="white-space: pre; font-size: 50%;">&Tab;</span>// Code for live web.
 	 * }</code>
 	 *
+	 * <p>Example checking if current env level is not development.</p>
+	 * <code>if ((ENV_LEVEL | ENV_DEV) !== ENV_LEVEL) {
+	 * <span style="white-space: pre; font-size: 50%;">&Tab;</span>// Code for anything but development.
+	 * }</code>
+	 *
 	 * @var int
 	 */
 	define('ENV_LEVEL', ENV_LIVE | $env_add);
