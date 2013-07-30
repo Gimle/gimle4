@@ -571,7 +571,7 @@ if ((ENV_LEVEL & ENV_WEB) && (!defined('BASE_PATH'))) {
 				 * <p>When working with multiple bases in config, each will be assigned to their own constant, starting with BASE_</p>
 				 */
 				define('BASE_' . mb_strtoupper($key), $value['path']);
-				if (isset($value['path'])) {
+				if ((isset($value['path'])) && (!defined('BASE_PATH_KEY'))) {
 					if (((isset($value['start'])) && ($value['start'] === substr($base, 0, strlen($value['start'])))) || ((isset($value['regex'])) && (preg_match($value['regex'], $base)))) {
 						$base = $value['path'];
 						if (isset($value['live'])) {
