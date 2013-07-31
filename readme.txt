@@ -88,9 +88,9 @@ License
 -------
 Multi licensed:
 
-1) http://opensource.org/licenses/bsd-license.php BSD 2-Clause License
-2) http://opensource.org/licenses/MIT MIT License
-3) http://opensource.org/licenses/GPL-3.0 GPL 3.0
+* http://opensource.org/licenses/bsd-license.php BSD 2-Clause License
+* http://opensource.org/licenses/MIT MIT License
+* http://opensource.org/licenses/GPL-3.0 GPL 3.0
 
 You are free to use the license that best suits your needs.
 
