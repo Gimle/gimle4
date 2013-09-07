@@ -646,7 +646,10 @@ if ((ENV_LEVEL & ENV_WEB) && (!defined('BASE_PATH'))) {
 
 if ((ENV_LEVEL & ENV_WEB) && (!defined('THIS_PATH'))) {
 	$page = page();
-	$page = implode('/', $page) . (!empty($page) ? '/' : '');
+	$page = implode('/', $page);
+	if ((isset($_SERVER['REQUEST_URI'])) && (!empty($page)) && (substr($_SERVER['REQUEST_URI'], -1, 1) === '/')) {
+		$page .= '/';
+	}
 	/**
 	 * The current public absolute path.
 	 *
