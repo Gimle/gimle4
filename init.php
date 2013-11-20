@@ -94,8 +94,6 @@ function page ($part = false) {
 	$path = array();
 	if ((isset($_SERVER['PATH_INFO'])) && (trim($_SERVER['PATH_INFO'], '/') != '')) {
 		$path = explode('/', trim($_SERVER['PATH_INFO'], '/'));
-	} elseif ((!isset($_SERVER['PATH_INFO'])) && (isset($_SERVER['REQUEST_URI'])) && (trim($_SERVER['REQUEST_URI'], '/') != '')) {
-		$path = explode('/', trim($_SERVER['REQUEST_URI'], '/'));
 	}
 	if ($part !== false) {
 		if (isset($path[$part])) {
@@ -389,8 +387,13 @@ if ($file = parse_config_file(SITE_DIR . 'config.ini')) {
 }
 unset($file);
 
-if ((!isset($_SERVER['PATH_INFO'])) && ((!isset($config['path_info_override'])) || ($config['path_info_override'] === true))) {
-	$_SERVER['PATH_INFO'] = '';
+if ((isset($config['path_info_override'])) && ($config['path_info_override'] !== false)) {
+	if ($config['path_info_override'] === true) {
+		$_SERVER['PATH_INFO'] = explode('?', urldecode($_SERVER['REQUEST_URI']));
+	} else {
+		$_SERVER['PATH_INFO'] = explode('?', urldecode(substr($_SERVER['REQUEST_URI'], strlen($config['path_info_override']))));
+	}
+	$_SERVER['PATH_INFO'] = $_SERVER['PATH_INFO'][0];
 }
 
 if (isset($config['core'])) {
